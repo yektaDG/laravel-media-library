@@ -2,6 +2,7 @@
 
 namespace YektaDG\Medialibrary\Providers;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class MediaLibraryServiceProvider extends ServiceProvider
@@ -21,5 +22,23 @@ class MediaLibraryServiceProvider extends ServiceProvider
 
         ], 'public');
 
+        $this->registerRoutes();
     }
+
+    protected function registerRoutes()
+    {
+        Route::group($this->routeConfiguration(), function () {
+            $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        });
+    }
+
+
+    protected function routeConfiguration(): array
+    {
+        return [
+            'prefix' => config('medialibrary.prefix'),
+            'middleware' => config('medialibrary.middleware'),
+        ];
+    }
+
 }
