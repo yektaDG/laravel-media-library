@@ -4,9 +4,8 @@ namespace YektaDG\Medialibrary\Http\Controllers;
 
 
 use App\Jobs\ImageProcess;
-use App\Models\Utils\ExtendedMedia as Media;
-use App\Models\Utils\ExtendedMediaFacade as MediaUploader;
-use App\Traits\Util\FolderTrait;
+use YektaDG\Medialibrary\Http\Models\ExtendedMedia as Media;
+use YektaDG\Medialibrary\Facades\ExtendedMediaFacade as MediaUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,11 +17,10 @@ use Plank\Mediable\Exceptions\MediaUpload\FileNotFoundException;
 use Plank\Mediable\Exceptions\MediaUpload\FileNotSupportedException;
 use Plank\Mediable\Exceptions\MediaUpload\FileSizeException;
 use Plank\Mediable\Exceptions\MediaUpload\ForbiddenException;
-use YektaDG\Medialibrary\Http\Controllers\Controller;
+use YektaDG\Medialibrary\Jobs\DeleteMedia;
 
 class MediaController extends Controller
 {
-    use FolderTrait;
 
     /**
      * this method fetch the images that current user uploaded then returns
@@ -151,7 +149,7 @@ class MediaController extends Controller
             foreach ($images as $image) {
                 if ($image->id == $id) {
                     $user->detachMedia($image);
-                    DeleteMedia::dispatchSync($image->directory, $image->filename, $image->extension);
+                    DeleteMedia::dispatchSync($image->directory, $image->filename, $image->extension); // TODO: fix here
                     $image->delete();
                 }
             }
@@ -173,5 +171,65 @@ class MediaController extends Controller
         $image = $user->getMedia('gallery')->where('id', $request->id)->first();
         $image->alt = $request->alt_value;
         $image->save();
+    }
+
+
+    public function removeFolder(Request $request)
+    {
+        $folderName = $request->folder_name;
+        $currentUser = Auth::user();
+        $currentUser->detachMediaTags($folderName);
+
+        return response()->json(['destroyed_toast' => 'پوشه با موفقیت حذف شد !']);
+    }
+
+    public function addToFolder(Request $request)
+    {
+        $currentUser = Auth::user();
+        $image_ids = $request->image_ids;
+        foreach ($image_ids as $image_id) {
+            $image = $currentUser->getMedia('gallery')->where('id', $image_id)->first();
+            if (isset($image) && !in_array($request->folder_name, $currentUser->getTagsForMedia($image)))
+                $currentUser->attachMedia($image, $request->folder_name);
+        }
+    }
+
+    public function getAllFolders()
+    {
+        $currentUser = Auth::user();
+        $folders = [];
+
+        if ($currentUser->can('can-create-fonts')) {
+            $folders = DB::table('mediables as m')
+                ->select('tag')
+                ->where('tag', 'like', 'gallery-%')
+                ->groupBy('tag')->get()->pluck('tag')->toArray();
+        } else {
+            $tags = $currentUser->getAllMediaByTag();
+            foreach ($tags as $key => $value) {
+                if (str_contains($key, 'gallery-')) {
+                    $folders[] = $key;
+                }
+            }
+        }
+        return $folders;
+    }
+
+    public function getMediaByFolder($folder)
+    {
+        $currentUser = Auth::user();
+
+        return $currentUser->getMedia($folder);
+    }
+
+    public function removeMediaFromFolder(Request $request)
+    {
+        $currentUser = Auth::user();
+        $image_ids = $request->image_ids;
+        foreach ($image_ids as $image_id) {
+            $image = $currentUser->getMedia('gallery')->where('id', $image_id)->first();
+            if (isset($image) && in_array($request->folder_name, $currentUser->getTagsForMedia($image)))
+                $currentUser->detachMedia($image, $request->folder_name);
+        }
     }
 }

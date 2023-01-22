@@ -3,6 +3,9 @@
   "description": "simple library for handling medias for projects",
   "type": "library",
   "autoload": {
+    "files": [
+      "YektaDG/MediaLibrary/Http/medialibraryHelpers.php"
+    ],
     "psr-4": {
       "YektaDG\\Medialibrary\\": "src/"
     }
