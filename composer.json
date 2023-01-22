@@ -1,0 +1,29 @@
+{
+  "name": "yektadg/medialibrary",
+  "description": "simple library for handling medias for projects",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "YektaDG\\Medialibrary\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "zmilad97",
+      "email": "zmilad97@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "orchestra/testbench": "7.0"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "YektaDG\\MediaLibrary\\Providers\\MediaLibraryServiceProvider"
+      ]
+    }
+  },
+  "require": {
+    "intervention/image": "^2.7"
+  }
+}

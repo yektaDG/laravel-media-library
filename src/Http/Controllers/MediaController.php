@@ -1,0 +1,180 @@
+<?php
+
+namespace App\Http\Controllers\Utils;
+
+use App\Jobs\ImageProcess;
+use App\Models\Utils\ExtendedMedia as Media;
+use App\Models\Utils\ExtendedMediaFacade as MediaUploader;
+use App\Traits\Util\FolderTrait;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Intervention\Image\Facades\Image;
+use Plank\Mediable\Exceptions\MediaUpload\ConfigurationException;
+use Plank\Mediable\Exceptions\MediaUpload\FileExistsException;
+use Plank\Mediable\Exceptions\MediaUpload\FileNotFoundException;
+use Plank\Mediable\Exceptions\MediaUpload\FileNotSupportedException;
+use Plank\Mediable\Exceptions\MediaUpload\FileSizeException;
+use Plank\Mediable\Exceptions\MediaUpload\ForbiddenException;
+use Illuminate\Support\Facades\File;
+use YektaDG\Medialibrary\Http\Controller;
+
+class MediaController extends Controller
+{
+    use FolderTrait;
+
+    /**
+     * this method fetch the images that current user uploaded then returns
+     * @return array
+     */
+    public function getAllImagesUploadedByCurrentUser(Request $request)
+    {
+
+        function getAllImagesInLibrary($folder)
+        {
+            $imgs = DB::table('media as m')->join('mediables as me', function ($join) use ($folder) {
+                $join->on('m.id', '=', 'me.media_id');
+                $join->on('me.tag', '=', DB::raw("'{$folder}'"));
+            })->select('m.*')->groupBy('m.id', 'm.disk', 'm.directory', 'm.filename', 'm.extension', 'm.mime_type'
+                , 'm.aggregate_type', 'm.height', 'm.width', 'm.alt', 'm.size', 'm.variant_name', 'm.original_media_id'
+                , 'm.created_at', 'm.updated_at')->get();
+            return $imgs;
+        }
+
+        $currentUser = Auth::user();
+        if (!$currentUser->can('can-view-media')) return abort(403);
+        if (!$currentUser->can('can-create-fonts')) {
+            $images = $currentUser->getMedia($request->folder);
+        } else {
+            $images = getAllImagesInLibrary($request->folder);
+        }
+        $total = ($request->limit * $request->offset) + $request->limit;
+        $hasMore = count($images) > $total;
+        $images = $images->reverse()->skip($request->limit * $request->offset)->take($request->limit)->toArray();
+        $toReturn = [
+            'images' => $images,
+            'hasMore' => $hasMore,
+        ];
+        return $toReturn;
+    }
+
+    /**
+     * this method fetch the images that current user uploaded and saved in a folder in a array with keys of tags and values of images then returns
+     * like ([gallery=>[image1,image2] ,gallery-folder=>[image3,image2] ])
+     * @return Media|array|\never
+     */
+    public function getImageByGalleryFolder()
+    {
+        $currentUser = Auth::user();
+        if (!$currentUser->can('can-view-media')) return abort(403);
+
+        $images = [];
+        foreach ($currentUser->getAllMediaByTag() as $key => $value) {
+            if (str_contains($key, 'gallery')) {
+                $images[$key] = $value;
+            }
+        }
+
+        return $images;
+    }
+
+
+    public function getSingleImage(Request $request)
+    {
+        $id = $request->get('id');
+        $image = Media::findOrFail($id);
+        if (isset($image)) {
+            $image->imageUrl = '/storage/' . $image->getDiskPath();
+            $image->created_date = getJalali($image->created_at);
+            return $image;
+        }
+    }
+
+    /**
+     *   this method first check if the user has permission to store media then store the image
+     * in folders separated by years and month
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user->can('can-store-media')) return abort(403);
+
+        $image = $request->file('media-library-image');
+        try {
+            pictureValidation($image, 'picture', 15097152);
+            $extension = $image->extension();
+            $name = str_replace(array($extension, '.'), '', $image->getClientOriginalName());
+            $name .= Str::random(6);
+            $media = MediaUploader::fromSource($image)
+                ->toDestination('public', 'uploads/images/' . now()->year . '/' . now()->month)
+                ->useFilename($name)
+                ->upload();
+            $extension = $media->extension;
+            $user->attachMedia($media, 'gallery');
+            if ($request->has('folder'))
+                $user->attachMedia($media, $request->folder);
+            $name = $media->filename;
+            $notChange = ['svg', 'gif'];
+            $path = $media->getDiskPath();
+            if (!in_array(strtolower($extension), $notChange))
+                ImageProcess::dispatchSync($path, $name, $extension);    //TODO : fix here
+            return response()->json(['status' => 'success', 'folder' => $request->folder, 'media' => $media]);
+
+        } catch (ValidationException|ConfigurationException|FileExistsException|FileNotFoundException|FileNotSupportedException|FileSizeException|ForbiddenException $e) {
+            return response()->json(['failed']);
+        }
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\Response|\never
+     */
+    public function destroy(Request $request)
+    {
+
+
+        $user = auth()->user();
+
+        if (!$user->can('can-delete-media')) return abort(403);
+
+        $ids = $request->get('media_ids');
+        foreach ($ids as $id) {
+            $id = preg_replace("/\D/", "", $id);
+            $images = $user->getMedia('gallery');
+            foreach ($images as $image) {
+                if ($image->id == $id) {
+                    $user->detachMedia($image);
+                    DeleteMedia::dispatchSync($image->directory, $image->filename, $image->extension);
+                    $image->delete();
+                }
+            }
+        }
+
+
+    }
+
+    /**
+     * sets the alt for an image
+     * @param Request $request
+     */
+    public function setAlt(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user->can('can-edit-media')) return abort(403);
+
+        $image = $user->getMedia('gallery')->where('id', $request->id)->first();
+        $image->alt = $request->alt_value;
+        $image->save();
+    }
+}
