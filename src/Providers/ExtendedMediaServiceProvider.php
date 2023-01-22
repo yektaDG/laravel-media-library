@@ -4,10 +4,10 @@
 namespace YektaDG\Medialibrary\Providers;
 
 
-use App\Models\Utils\ExtendedMediaUploader;
 use Illuminate\Contracts\Container\Container;
 use Plank\Mediable\MediableServiceProvider;
 use Plank\Mediable\MediaUploader;
+use YektaDG\Medialibrary\Http\Services\ExtendedMediaUploader;
 
 class ExtendedMediaServiceProvider extends MediableServiceProvider
 {

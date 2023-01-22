@@ -13,11 +13,10 @@ use Plank\Mediable\Exceptions\MediaUpload\FileNotSupportedException;
 use Plank\Mediable\Exceptions\MediaUpload\FileSizeException;
 use Plank\Mediable\Exceptions\MediaUpload\ForbiddenException;
 use Plank\Mediable\Helpers\File;
-use App\Models\Utils\ExtendedMedia as Media;
+use YektaDG\Medialibrary\Http\Models\ExtendedMedia as Media;
 use Plank\Mediable\MediaUploader;
 use Plank\Mediable\SourceAdapters\RawContentAdapter;
 use Plank\Mediable\SourceAdapters\SourceAdapterFactory;
-use function App\Models\Utils\str_contains;
 
 /**
  * Media Uploader.

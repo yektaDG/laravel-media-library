@@ -1,6 +1,6 @@
 <?php
 
-namespace YektaDG\Medialibrary\Http;
+namespace YektaDG\Medialibrary\Http\Controllers;
 
 
 use Illuminate\Foundation\Bus\DispatchesJobs;

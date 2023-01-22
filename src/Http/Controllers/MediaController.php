@@ -1,27 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\Utils;
+namespace YektaDG\Medialibrary\Http\Controllers;
+
 
 use App\Jobs\ImageProcess;
 use App\Models\Utils\ExtendedMedia as Media;
 use App\Models\Utils\ExtendedMediaFacade as MediaUploader;
 use App\Traits\Util\FolderTrait;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Intervention\Image\Facades\Image;
 use Plank\Mediable\Exceptions\MediaUpload\ConfigurationException;
 use Plank\Mediable\Exceptions\MediaUpload\FileExistsException;
 use Plank\Mediable\Exceptions\MediaUpload\FileNotFoundException;
 use Plank\Mediable\Exceptions\MediaUpload\FileNotSupportedException;
 use Plank\Mediable\Exceptions\MediaUpload\FileSizeException;
 use Plank\Mediable\Exceptions\MediaUpload\ForbiddenException;
-use Illuminate\Support\Facades\File;
-use YektaDG\Medialibrary\Http\Controller;
+use YektaDG\Medialibrary\Http\Controllers\Controller;
 
 class MediaController extends Controller
 {
