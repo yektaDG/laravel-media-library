@@ -24,6 +24,7 @@
     }
   },
   "require": {
-    "intervention/image": "^2.7"
+    "intervention/image": "^2.7",
+    "plank/laravel-mediable": "^5.8"
   }
 }
