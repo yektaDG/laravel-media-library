@@ -19,7 +19,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '\..\resources\js' => public_path('vendor/yektadg/medialibrary'),
             __DIR__ . '\..\resources\views\publish' => resource_path('views/vendor/yektadg/medialibrary'),
-
+            __DIR__ . '\..\public\media' => public_path('/vendor/yektadg/medialibrary'),
         ], 'public');
 
         $this->registerRoutes();
