@@ -41,12 +41,11 @@ class MediaController extends Controller
         }
 
         $currentUser = Auth::user();
-        if (!$currentUser->can('can-view-media')) return abort(403);
-        if (!$currentUser->can('can-create-fonts')) {
-            $images = $currentUser->getMedia($request->folder);
-        } else {
-            $images = getAllImagesInLibrary($request->folder);
-        }
+//        if (!$currentUser->can('')) {
+        $images = $currentUser->getMedia($request->folder);
+//        } else {
+//            $images = getAllImagesInLibrary($request->folder);
+//        }
         $total = ($request->limit * $request->offset) + $request->limit;
         $hasMore = count($images) > $total;
         $images = $images->reverse()->skip($request->limit * $request->offset)->take($request->limit)->toArray();
@@ -65,7 +64,6 @@ class MediaController extends Controller
     public function getImageByGalleryFolder()
     {
         $currentUser = Auth::user();
-        if (!$currentUser->can('can-view-media')) return abort(403);
 
         $images = [];
         foreach ($currentUser->getAllMediaByTag() as $key => $value) {
@@ -99,7 +97,6 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        if (!$user->can('can-store-media')) return abort(403);
 
         $image = $request->file('media-library-image');
         try {
@@ -140,7 +137,6 @@ class MediaController extends Controller
 
         $user = auth()->user();
 
-        if (!$user->can('can-delete-media')) return abort(403);
 
         $ids = $request->get('media_ids');
         foreach ($ids as $id) {
@@ -166,7 +162,6 @@ class MediaController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->can('can-edit-media')) return abort(403);
 
         $image = $user->getMedia('gallery')->where('id', $request->id)->first();
         $image->alt = $request->alt_value;
@@ -199,19 +194,19 @@ class MediaController extends Controller
         $currentUser = Auth::user();
         $folders = [];
 
-        if ($currentUser->can('can-create-fonts')) {
-            $folders = DB::table('mediables as m')
-                ->select('tag')
-                ->where('tag', 'like', 'gallery-%')
-                ->groupBy('tag')->get()->pluck('tag')->toArray();
-        } else {
-            $tags = $currentUser->getAllMediaByTag();
-            foreach ($tags as $key => $value) {
-                if (str_contains($key, 'gallery-')) {
-                    $folders[] = $key;
-                }
+//        if ($currentUser->can('can-create-fonts')) {
+//            $folders = DB::table('mediables as m')
+//                ->select('tag')
+//                ->where('tag', 'like', 'gallery-%')
+//                ->groupBy('tag')->get()->pluck('tag')->toArray();
+//        } else {
+        $tags = $currentUser->getAllMediaByTag();
+        foreach ($tags as $key => $value) {
+            if (str_contains($key, 'gallery-')) {
+                $folders[] = $key;
             }
         }
+//        }
         return $folders;
     }
 
