@@ -134,7 +134,7 @@ class MediaController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response|\never
      */
-    public function destroy(Request $request)
+    public function remove(Request $request)
     {
 
 
@@ -230,6 +230,21 @@ class MediaController extends Controller
             $image = $currentUser->getMedia('gallery')->where('id', $image_id)->first();
             if (isset($image) && in_array($request->folder_name, $currentUser->getTagsForMedia($image)))
                 $currentUser->detachMedia($image, $request->folder_name);
+        }
+    }
+
+
+    public function imageExists(Request $request)
+    {
+        try {
+            $images = $request['images'];
+            foreach ($images as $key => $image) {
+                $image['element'] = file_exists(public_path($image['url']));
+                $images[$key] = $image;
+            }
+            return $images;
+        } catch (\Exception $e) {
+            return $images;
         }
     }
 }
