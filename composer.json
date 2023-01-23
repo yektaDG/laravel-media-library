@@ -3,10 +3,12 @@
   "description": "simple library for handling medias for projects",
   "type": "library",
   "autoload": {
-
     "psr-4": {
       "YektaDG\\Medialibrary\\": "src"
-    }
+    },
+    "files": [
+      "src/helpers.php"
+    ]
   },
   "authors": [
     {
