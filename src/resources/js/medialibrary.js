@@ -135,7 +135,7 @@ class MediaLibrary {
                     'X-CSRF-TOKEN': _self.csrf,
                 }, paramName: "media-library-image", // The name that will be used to transfer the file
                 maxFiles: 50, maxFilesize: 10, // MB
-                addRemoveLinks: true, success: (file, response) => {
+                method: 'POST', addRemoveLinks: true, success: (file, response) => {
                     _self.mlAddSingleImage(response.media);
                     setTimeout(() => {        // removes the uploaded image thumbnail in dropzone area after 3 second
                         file._removeLink.click()
@@ -776,7 +776,7 @@ class MediaLibrary {
      * @param images
      */
     mlRefreshLibrary(images) {
-        const row = $(`#library-row-${this.libraryId}`);
+        const row = document.querySelector(`#library-row-${this.libraryId}`);
         // showLoader();
         const toSend = [];
         const elements = {};
@@ -794,7 +794,7 @@ class MediaLibrary {
         }).then(res => {
             res.data.forEach(data => {
                 const image = elements[data['id']];
-                const url = `/storage/${image['directory']}/${image['filename']} ${data['element'] === true ? '-139x-' + image['extension'] : image['extension']}`;
+                const url = `/storage/${image['directory']}/${image['filename']}${data['element'] === true ? '-139x-' + image['extension'] : image['extension']}`;
 
                 const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
                 const div = document.createElement('div');
@@ -806,8 +806,7 @@ class MediaLibrary {
                                     <span type="button" thumbnailId="${image['id']}" class="fw-bold btn th-info-button p-0 "><i class="far fa-edit  fs-5"></i></span>
                         <div class="th-info ">
                                     <span class="fw-bolder th-text">${image['filename']}</span>
-                                    <span class="fw-bold th-text">${image['alt']}</span></div>
-                    `
+                                    <span class="fw-bold th-text">${image['alt']}</span></div>    `
                 row.insertBefore(div, _self.sentinelEl);
             });
 
