@@ -247,10 +247,10 @@ class MediaLibrary {
      * initiates the folder section of media library  events
      */
     initFolderDivEvents() {
-        const folderDiv = $('.folder-div');
         const _self = this;
         //.off() is for removing previous events on div to avoid duplicate events
-        folderDiv.off('click').on('click', async () => {
+        $('.folder-div').off('click').on('click', async (e) => {
+            const folderDiv = e.currentTarget;
             if (!$(folderDiv).hasClass('selected-folder')) {    // if the folder is not selected
                 // -------- start styling ---------------
                 const selectedFolder = $('.selected-folder');
@@ -313,8 +313,9 @@ class MediaLibrary {
 
     initSearchFolder(id = this.libraryId) {
         const libraryFolderName = $(`#library-folder-name-${id}`);
+        const _self = this;
         libraryFolderName.off('keyup').on('keyup', () => {
-            filterFolders($(libraryFolderName).val())
+            _self.filterFolders($(libraryFolderName).val())
         })
     }
 
@@ -474,7 +475,7 @@ class MediaLibrary {
         const filtered = this.folders.filter((folder) => {
             return folder.replace('gallery-', '').includes(filter)
         })
-        mlRefreshFolders(filtered)
+        this.mlRefreshFolders(filtered)
     }
 
 
