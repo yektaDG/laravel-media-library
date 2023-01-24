@@ -3,7 +3,7 @@
 return [
 
     'prefix' => 'medialibrary',
-    'middleware' => ['web'],
+    'middleware' => ['web', 'auth'],
 
     'providers' => [
         \YektaDG\Medialibrary\Providers\ExtendedMediaServiceProvider::class,
