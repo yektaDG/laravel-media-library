@@ -9,7 +9,8 @@ class MediaLibraryServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        //
+        $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'medialibrary');
+
     }
 
     public function boot()
@@ -20,9 +21,12 @@ class MediaLibraryServiceProvider extends ServiceProvider
             __DIR__ . '\..\resources\js' => public_path('vendor/yektadg/medialibrary'),
             __DIR__ . '\..\resources\views\publish' => resource_path('views/vendor/yektadg/medialibrary'),
             __DIR__ . '\..\public\media' => public_path('/vendor/yektadg/medialibrary'),
+            __DIR__ . '/../config/config.php' => config_path('medialibrary.php'),
+
         ], 'public');
 
         $this->registerRoutes();
+
     }
 
     protected function registerRoutes()
