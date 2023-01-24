@@ -159,8 +159,8 @@ class MediaLibrary {
     initModalEvent() {
         const _self = this;
         const mediaLibraryModal = $('.media-library-modal');
-        mediaLibraryModal.off('shown.bs.modal').on('shown.bs.modal', async () => {
-            _self.libraryId = $(mediaLibraryModal).attr('libraryId');        //sets the global libraryId that currently using
+        mediaLibraryModal.off('shown.bs.modal').on('shown.bs.modal', async (e) => {
+            _self.libraryId = $(e.currentTarget).attr('libraryId');        //sets the global libraryId that currently using
             _self.initSearchFolder();
             await _self.mlGetAllFolders().then(async () => {          // it is important to get the folders first because the observer uses the folder name to fetch images
                 _self.loadingButtonEl = document.querySelector(`#infinite-scroll-button-${_self.libraryId}`);
@@ -642,8 +642,9 @@ class MediaLibrary {
         }
         const addToTinymce = () => {
             for (let i = 0; i < this.selectedArray.length; i++) {
+                const element = _self.selectedArray[i];
                 let content = tinymce.get(_self.useId).getContent();
-                content += `<img alt="${selectedArray[i].getAttribute('alt')}" src="${_self.selectedArray[i].getAttribute('imageurl')}" style="max-width: 1024px"/>`;
+                content += `<img alt="${$(element).attr('alt')}" src="${$(element).attr('imageurl')}" style="max-width: 1024px"/>`;
                 tinymce.get(_self.useId).setContent(content);
             }
         }
