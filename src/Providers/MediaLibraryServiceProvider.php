@@ -22,6 +22,7 @@ class MediaLibraryServiceProvider extends ServiceProvider
             __DIR__ . '\..\resources\views\publish' => resource_path('views/vendor/yektadg/medialibrary'),
             __DIR__ . '\..\public\media' => public_path('/vendor/yektadg/medialibrary'),
             __DIR__ . '/../config/config.php' => config_path('medialibrary.php'),
+            __DIR__ . '\..\resources\css' => public_path('vendor/yektadg/medialibrary'),
 
         ], 'public');
 

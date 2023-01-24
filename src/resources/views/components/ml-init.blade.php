@@ -1,5 +1,7 @@
+<link rel="stylesheet" href="{{asset('/vendor/yektadg/medialibrary/medialibrary.min.css')}}">
+
 <x-mediaLibrary::media-library-modal :id="$id"></x-mediaLibrary::media-library-modal>
-<x-mediaLibrary::js :id="$id"></x-mediaLibrary::js>
+<script src="{{ asset('/vendor/yektadg/medialibrary/medialibrary.js') }}"></script>
 <script>
     const parameters = {
         defaultImage: '{{asset('/vendor/yektadg/medialibrary/blank-image.svg')}}',
