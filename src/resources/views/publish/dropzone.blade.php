@@ -11,7 +11,7 @@
                         <div class=" ms-4">
                             <h5 class="fs-6  text-gray-900 "> برای بارگذاری فایل‌ها را بکشید . یا کلیک کنید </h5>
                             <span
-                                    class="form-text fs-6 text-muted">حداکثر اندازه پرونده برای بارگذاری: 2 مگابایت .</span>
+                                    class="form-text fs-6 text-muted">حداکثر اندازه پرونده برای بارگذاری: 15 مگابایت .</span>
 
                             <div class="text-muted fs-7 mt-1"> فرمت‌های قابل قبول
                                 png, jpg, jpeg, gif, webp, svg
