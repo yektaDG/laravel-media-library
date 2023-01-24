@@ -128,8 +128,8 @@ class MediaLibrary {
      */
     initDropZones() {
         const _self = this;
-        $('.dropzone').each(function () {
-            const mlDropzone = new Dropzone(`#${$(this).attr('id')}`, {
+        $('.dropzone').each((index, element) => {
+            const mlDropzone = new Dropzone(`#${$(element).attr('id')}`, {
                 url: _self.dropzoneRoute ?? ' ', // Set the url for your upload script location
                 headers: {
                     'X-CSRF-TOKEN': _self.csrf,
@@ -145,7 +145,7 @@ class MediaLibrary {
             });
             //  adding the folder to the request to force the uploaded image to show in selected folder
             mlDropzone.on("sending", (file, xhr, formData) => {
-                let folder = $('.folder-div.selected-folder .folder-hidden').val()
+                const folder = $('.folder-div.selected-folder .folder-hidden').val()
                 if (folder !== undefined && folder !== 'gallery' && folder.length > 0) {
                     formData.append("folder", folder);
                 }
@@ -235,7 +235,7 @@ class MediaLibrary {
                 addMediaButton.closest('div').attr('data-bs-original-title', '');
                 $(`#library-row-${_self.libraryId} .selected`).each((index, element) => {
                     if (index !== 0) {
-                        element.classList.remove('selected');
+                        $(element).removeClass('selected');
                         _self.mlSetStyleToggle($(element).parent('.th-div'), false)
                     }
                 });
@@ -338,9 +338,10 @@ class MediaLibrary {
      * initiates the add to folder button event
      */
     initAddToFolderButton() {
-        const addToFolderButton = $('.add-to-folder');
         const _self = this;
-        addToFolderButton.off('click').on('click', (e) => {
+        $('.add-to-folder').off('click').on('click', (e) => {
+            const addToFolderButton = e.currentTarget;
+
             e.preventDefault();
             e.stopPropagation();      // to prevent the parent div to execute on click event
             if ($(addToFolderButton).closest('.folder-div').hasClass('selected-folder'))     // if the folder is currently selected it removes the selected images from folder
@@ -370,16 +371,17 @@ class MediaLibrary {
      */
     removeFromFolder(folderName) {
         const images = [];
+        const _self = this;
         const selected = $(`#library-row-${this.libraryId}.selected`);   // gets all the selected images
         selected.each((index, element) => {
-            const id = element.attr('id').split('thumbnail-')[1];
+            const id = $(element).attr('id').split('thumbnail-')[1];
             images.push(id)                             //collect all the images ids  in an array
         })
 
         axios.post(this.removeFromFolderRoute, {
             "image_ids": images, "folder_name": folderName
         }).then(() => {
-            removeImageFromRow(selected)
+            _self.removeImageFromRow(selected)
             this.notifyToast('موارد انتخاب شده با موفقیت حذف شدند.');
         })
     }
@@ -399,12 +401,11 @@ class MediaLibrary {
      */
     addToFolder(folderName) {
         const images = [];
-        const selected = $(`#library-row-${this.libraryId}.selected`);   // gets all the selected images
+        const selected = $(`#library-row-${this.libraryId} .selected`);   // gets all the selected images
         selected.each((index, element) => {
-            const id = element.attr('id').split('thumbnail-')[1];
+            const id = $(element).attr('id').split('thumbnail-')[1];
             images.push(id)                             //collect all the images ids  in an array
         })
-
         axios.post(this.moveToFolderRoute, {
             "image_ids": images, "folder_name": folderName
         }).then(() => {
@@ -708,7 +709,7 @@ class MediaLibrary {
     removeImageFromRow(images) {
         const row = $(`#library-row-${this.libraryId}`);
         images.each((index, image) => {
-            row.remove(image.closest('.th-div'));
+            row.remove($(image).closest('.th-div'));
         })
     }
 
