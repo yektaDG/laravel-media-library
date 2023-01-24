@@ -526,8 +526,8 @@ class MediaLibrary {
     //add class and border on select a thumbnail then based on number of selected thumbnails shows an info
     mlSelectThumbnail(id) {
         const btn = $(`#library-row-${this.libraryId} #thumbnail-${id}`);
-        if (btn.classList.contains('selected')) {
-            btn.classList.remove('selected');
+        if (btn.hasClass('selected')) {
+            btn.removeClass('selected');
             this.mlSetStyleToggle($(btn).closest('.th-div'), false)
 
             this.mlCheckSelected();
@@ -536,13 +536,13 @@ class MediaLibrary {
             if (!$(`#multi-select-mode-${this.libraryId}`).is(':checked')) {
                 const forDelete = []
                 $(`#library-row-${this.libraryId} .selected`).each((index, element) => {
-                    element.classList.remove('selected');
+                    element.removeClass('selected');
                     mlSetStyleToggle($(element).parent('.th-div'), false)
                     forDelete.push(element)
                 });
                 this.selectedArray = this.selectedArray.filter(item => !forDelete.includes(item))
             }
-            btn.classList.add('selected');
+            btn.addClass('selected');
             this.mlSetStyleToggle($(btn).closest('.th-div'), true)
             this.mlCheckSelected();
             this.selectedArray.push(btn);
@@ -620,13 +620,13 @@ class MediaLibrary {
     mlCheckSelected() {
         const btns = $(`#library-row-${this.libraryId} .selected`);
         const addBtn = $(`#add-media-${this.libraryId} `);
-        const removeBtn = $(`#delete-media-${libraryId}`);
+        const removeBtn = $(`#delete-media-${this.libraryId}`);
         if (btns.length > 0) {
-            addBtn.classList.remove('disabled');
-            removeBtn.classList.remove('disabled');
+            addBtn.removeClass('disabled');
+            removeBtn.removeClass('disabled');
         } else {
-            addBtn.classList.add('disabled');
-            removeBtn.classList.add('disabled');
+            addBtn.addClass('disabled');
+            removeBtn.addClass('disabled');
         }
     }
 
