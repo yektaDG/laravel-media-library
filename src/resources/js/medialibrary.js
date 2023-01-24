@@ -203,8 +203,7 @@ class MediaLibrary {
             _self.multipleSelect = $(mlButton).attr('multipleSelect') === 'true';
 
             _self.hidOnAdd = $(mlButton).attr('hideOnAdd') === 'true';
-
-            if ($(mlButton).attr('showModal') === 'true') $('#media-library').modal('show'); //shows the  media library modal
+            if (_self.showModal === true) $('#media-library').modal('show'); //shows the  media library modal
         });
 
         //on click removes the selected image  from imagepreview
@@ -606,7 +605,9 @@ class MediaLibrary {
     initEventForAddAndRemoveButton() {
         const _self = this;
         $(`.ml-add-button`).off('click').on('click', _self.mlAddMediaForUsage());
-        $(`.ml-delete-button`).off('click').on('click', ()=>{_self.mlDeleteMedia()})
+        $(`.ml-delete-button`).off('click').on('click', () => {
+            _self.mlDeleteMedia()
+        })
     }
 
     /**
