@@ -604,7 +604,9 @@ class MediaLibrary {
 
     initEventForAddAndRemoveButton() {
         const _self = this;
-        $(`.ml-add-button`).off('click').on('click', _self.mlAddMediaForUsage());
+        $(`.ml-add-button`).off('click').on('click', () => {
+            _self.mlAddMediaForUsage()
+        });
         $(`.ml-delete-button`).off('click').on('click', () => {
             _self.mlDeleteMedia()
         })
