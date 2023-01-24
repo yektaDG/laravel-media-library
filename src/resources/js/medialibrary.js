@@ -721,8 +721,8 @@ class MediaLibrary {
      * @param image
      */
     mlAddSingleImage(image) {
-        const row = $(`#library-row-${this.libraryId}`);
-        const firstChild = $(`#library-row-${this.libraryId} .th-div:first-child`);
+        const row = document.querySelector(`#library-row-${this.libraryId}`);
+        const firstChild = document.querySelector(`#library-row-${this.libraryId} .th-div:first-child`);
         const toSend = [];
         const elements = {};
         const url = `storage/${image['directory']}/${image['filename']}-139x-${image['extension']}`
