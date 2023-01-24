@@ -576,7 +576,7 @@ class MediaLibrary {
         </i> : ${data['alt']}</p><p class="text-center fw-bold"> ${data['created_date']}  در  ${data['created_at'].substring(11, 19)} </p>
          <p class="text-center fw-bold"> کیلو بایت  ${size} </p> <p class="text-center fw-bold"> پیکسل ${data['width']}   *  ${data['height']} </p>  <br>
          <div class="input-group input-group-sm justify-content-center mt-2 px-1" >   <input id="alt-input" type="text"  value="${data['alt']}" class="form-control form-control-sm fs-8"  placeholder="Alt را وارد کنید">
-         <button type="button" class="btn btn-light btn-sm fs-8" onclick="this.setAlt(${data['id']})">ذخیره</button> </div></div>`;
+         <button type="button" class="setAlt-btn btn btn-light btn-sm fs-8">ذخیره</button> </div></div>`;
     }
 
     /**
@@ -834,6 +834,7 @@ class MediaLibrary {
 
     mlOpenInfo(info, element) {
         const _self = this;
+        let id = 0;
         $(`#thumbnail-${info.attr('openedBy')}`).removeClass('selected-th-info');
         info.attr('openedBy', element.attr('thumbnailId'))
         info.removeClass('close-image-info')
@@ -847,8 +848,11 @@ class MediaLibrary {
                 info.html(infos);
                 info.find('.th-info-details').removeClass('d-none');
                 $(`#details-body-${_self.libraryId}`).collapse('show');
+                $('.th-info-details').find('.setAlt-btn').off('click').on('click', () => {
+                    _self.setAlt(response.data['id'])
+                })
             }
-        })
+        });
     }
 
     mlCloseInfo(info) {
