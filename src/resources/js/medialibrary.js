@@ -236,7 +236,7 @@ class MediaLibrary {
                 $(`#library-row-${_self.libraryId} .selected`).each((index, element) => {
                     if (index !== 0) {
                         element.classList.remove('selected');
-                        mlSetStyleToggle($(element).parent('.th-div'), false)
+                        _self.mlSetStyleToggle($(element).parent('.th-div'), false)
                     }
                 });
             }
