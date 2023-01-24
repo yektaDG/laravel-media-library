@@ -372,12 +372,11 @@ class MediaLibrary {
     removeFromFolder(folderName) {
         const images = [];
         const _self = this;
-        const selected = $(`#library-row-${this.libraryId}.selected`);   // gets all the selected images
+        const selected = $(`#library-row-${this.libraryId} .selected`);   // gets all the selected images
         selected.each((index, element) => {
             const id = $(element).attr('id').split('thumbnail-')[1];
             images.push(id)                             //collect all the images ids  in an array
         })
-
         axios.post(this.removeFromFolderRoute, {
             "image_ids": images, "folder_name": folderName
         }).then(() => {
@@ -707,9 +706,8 @@ class MediaLibrary {
      * removes array of images from library row
      */
     removeImageFromRow(images) {
-        const row = $(`#library-row-${this.libraryId}`);
         images.each((index, image) => {
-            row.remove($(image).closest('.th-div'));
+            $(image).closest('.th-div').remove();
         })
     }
 
