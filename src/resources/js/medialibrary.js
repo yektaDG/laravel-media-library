@@ -192,10 +192,10 @@ class MediaLibrary {
      */
     initMlButtonEvents() {
         const _self = this;
-        const mlButton = $('.ml-button');
-        const mlRemoveButton = $('.ml-remove-button');
         // for each click  sets the imagePreviewId to use later then
-        mlButton.off('click').on('click', () => {
+        $('.ml-button').off('click').on('click', (e) => {
+            const mlButton = e.currentTarget;
+
             _self.useType = $(mlButton).attr('useType');              //sets the useType
             // sets the useId
             _self.useId = $(mlButton).attr('useId') ?? $(mlButton).closest('div').attr('id');
@@ -203,11 +203,14 @@ class MediaLibrary {
             _self.multipleSelect = $(mlButton).attr('multipleSelect') === 'true';
 
             _self.hideOnAdd = $(mlButton).attr('hideOnAdd') === 'true' || !($(mlButton).attr('hideOnAdd'));
+            _self.showModal = $(mlButton).attr('showModal') !== 'false';
             if (_self.showModal === true) $('#media-library').modal('show'); //shows the  media library modal
         });
 
         //on click removes the selected image  from imagepreview
-        mlRemoveButton.off('click').on('click', () => {
+        $('.ml-remove-button').off('click').on('click', (e) => {
+            const mlRemoveButton = e.currentTarget;
+
             _self.imagePreviewerId = $(mlRemoveButton).closest('div').attr('id');
             const parentDiv = $('#' + _self.imagePreviewerId);
             const lbox = parentDiv.children('.lbox');
