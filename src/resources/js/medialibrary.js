@@ -356,10 +356,9 @@ class MediaLibrary {
      * initiates the select thumbnail event
      */
     initSelectThumbnailEvent() {
-        const thDiv = $('.th-div');
         const _self = this;
-        thDiv.off('click').on('click', () => {
-            _self.mlSelectThumbnail($(thDiv).find('.img-thumbnail').attr('thumbnailId'))
+        $('.th-div').off('click').on('click', (e) => {
+            _self.mlSelectThumbnail($(e.currentTarget).find('.img-thumbnail').attr('thumbnailId'))
         })
     }
 
@@ -384,12 +383,6 @@ class MediaLibrary {
         })
     }
 
-    test() {
-        const shit = () => {
-            this.notifyToast("shoot")
-        }
-        shit();
-    }
 
     notifyToast(message) {
         const toastElement = document.getElementById(`ml-toast-${this.libraryId}`);
@@ -526,6 +519,7 @@ class MediaLibrary {
     //add class and border on select a thumbnail then based on number of selected thumbnails shows an info
     mlSelectThumbnail(id) {
         const btn = $(`#library-row-${this.libraryId} #thumbnail-${id}`);
+        const _self = this;
         if (btn.hasClass('selected')) {
             btn.removeClass('selected');
             this.mlSetStyleToggle($(btn).closest('.th-div'), false)
@@ -536,8 +530,8 @@ class MediaLibrary {
             if (!$(`#multi-select-mode-${this.libraryId}`).is(':checked')) {
                 const forDelete = []
                 $(`#library-row-${this.libraryId} .selected`).each((index, element) => {
-                    element.removeClass('selected');
-                    mlSetStyleToggle($(element).parent('.th-div'), false)
+                    $(element).removeClass('selected');
+                    _self.mlSetStyleToggle($(element).parent('.th-div'), false)
                     forDelete.push(element)
                 });
                 this.selectedArray = this.selectedArray.filter(item => !forDelete.includes(item))
