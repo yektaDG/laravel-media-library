@@ -1,7 +1,7 @@
 <div class="col-xl-12">
     <form class="form" action="none" id="dropzone-form-{{$id ?? ''}}">
         <form class="form" action="
-        {{route('media.store')}}
+        {{route('medialibrary.store')}}
         " method="post" enctype="multipart/form-data">
             <div class="fv-row ">
                 <div class="dropzone ml-dropzone d-flex justify-content-center  dz-clickable"
