@@ -41,19 +41,18 @@ class MediaController extends Controller
         }
 
         $currentUser = Auth::user();
-//        if (!$currentUser->can('')) {
-        $images = $currentUser->getMedia($request->folder);
-//        } else {
-//            $images = getAllImagesInLibrary($request->folder);
-//        }
+        if (!$request->accessAllMedia) {
+            $images = $currentUser->getMedia($request->folder);
+        } else {
+            $images = getAllImagesInLibrary($request->folder);
+        }
         $total = ($request->limit * $request->offset) + $request->limit;
         $hasMore = count($images) > $total;
         $images = $images->reverse()->skip($request->limit * $request->offset)->take($request->limit)->toArray();
-        $toReturn = [
+        return [
             'images' => $images,
             'hasMore' => $hasMore,
         ];
-        return $toReturn;
     }
 
     /**
@@ -64,7 +63,6 @@ class MediaController extends Controller
     public function getImageByGalleryFolder()
     {
         $currentUser = Auth::user();
-
         $images = [];
         foreach ($currentUser->getAllMediaByTag() as $key => $value) {
             if (str_contains($key, 'gallery')) {
@@ -189,24 +187,25 @@ class MediaController extends Controller
         }
     }
 
-    public function getAllFolders()
+    public function getAllFolders(Request $request)
     {
+
         $currentUser = Auth::user();
         $folders = [];
 
-//        if ($currentUser->can('can-create-fonts')) {
-//            $folders = DB::table('mediables as m')
-//                ->select('tag')
-//                ->where('tag', 'like', 'gallery-%')
-//                ->groupBy('tag')->get()->pluck('tag')->toArray();
-//        } else {
-        $tags = $currentUser->getAllMediaByTag();
-        foreach ($tags as $key => $value) {
-            if (str_contains($key, 'gallery-')) {
-                $folders[] = $key;
+        if ($request->accessAllMedia) {
+            $folders = DB::table('mediables as m')
+                ->select('tag')
+                ->where('tag', 'like', 'gallery-%')
+                ->groupBy('tag')->get()->pluck('tag')->toArray();
+        } else {
+            $tags = $currentUser->getAllMediaByTag();
+            foreach ($tags as $key => $value) {
+                if (str_contains($key, 'gallery-')) {
+                    $folders[] = $key;
+                }
             }
         }
-//        }
         return $folders;
     }
 
