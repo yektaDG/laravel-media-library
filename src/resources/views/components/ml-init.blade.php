@@ -3,7 +3,7 @@
 <x-mediaLibrary::media-library-modal :id="$id"></x-mediaLibrary::media-library-modal>
 <script src="{{ asset('/vendor/yektadg/medialibrary/medialibrary.js') }}"></script>
 <script>
-    const parameters = {
+    new MediaLibrary({
         defaultImage: '{{asset('/vendor/yektadg/medialibrary/blank-image.svg')}}',
         dropzoneRoute: '{{route('medialibrary.store')}}',
         csrf: '{{csrf_token()}}',
@@ -18,6 +18,5 @@
         allMediaRoute: '{{route('medialibrary.all')}}',
         libraryId: {{$id}},
         imageExistRoute: '{{route('medialibrary.image-exists')}}',
-    }
-    new MediaLibrary(parameters);
+    });
 </script>
