@@ -16,6 +16,7 @@
         allMediaRoute: '{{route('medialibrary.all')}}',
         libraryId: {{$id}},
         showModal: {!! json_encode($showModal) !!},
+        imageExistRoute: '{{route('medialibrary.image-exists')}}',
     }
     new MediaLibrary(parameters);
 </script>
