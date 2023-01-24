@@ -1,10 +1,11 @@
 <div class="col-xl-12">
     <form class="form" action="none" id="dropzone-form-{{$id ?? ''}}">
         <form class="form" action="
-{{--        {{route('media.store')}}--}}
-        " method="post">
+        {{route('media.store')}}
+        " method="post" enctype="multipart/form-data">
             <div class="fv-row ">
-                <div class="dropzone ml-dropzone d-flex justify-content-center  dz-clickable" id="dropzone-js-{{$id ?? ''}}">
+                <div class="dropzone ml-dropzone d-flex justify-content-center  dz-clickable"
+                     id="dropzone-js-{{$id ?? ''}}">
                     <div class="dz-message needsclick">
                         <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
                         <div class=" ms-4">
