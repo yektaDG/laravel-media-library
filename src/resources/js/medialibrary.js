@@ -202,7 +202,7 @@ class MediaLibrary {
 
             _self.multipleSelect = $(mlButton).attr('multipleSelect') === 'true';
 
-            _self.hidOnAdd = $(mlButton).attr('hideOnAdd') === 'true';
+            _self.hideOnAdd = $(mlButton).attr('hideOnAdd') === 'true' || !($(mlButton).attr('hideOnAdd'));
             if (_self.showModal === true) $('#media-library').modal('show'); //shows the  media library modal
         });
 
@@ -666,7 +666,7 @@ class MediaLibrary {
                     break;
             }
         }
-        if (this.hidOnAdd === true) {
+        if (this.hideOnAdd === true) {
             $('#media-library').modal('hide');
             this.notifyToast('موارد انتخاب شده با موفقیت اضافه شدند.')
         } else {
