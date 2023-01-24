@@ -128,7 +128,7 @@ class MediaLibrary {
      */
     initDropZones() {
         const _self = this;
-        $('.dropzone').each((index, element) => {
+        $('.ml-dropzone').each((index, element) => {
             const mlDropzone = new Dropzone(`#${$(element).attr('id')}`, {
                 url: _self.dropzoneRoute ?? ' ', // Set the url for your upload script location
                 headers: {
