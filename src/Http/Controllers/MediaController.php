@@ -98,7 +98,7 @@ class MediaController extends Controller
 
         $image = $request->file('media-library-image');
         try {
-            pictureValidation($image, 'picture', 15097152);
+            mlPictureValidation($image, 'picture', 15097152);
             $extension = $image->extension();
             $name = str_replace(array($extension, '.'), '', $image->getClientOriginalName());
             $name .= Str::random(6);
