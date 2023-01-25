@@ -40,7 +40,9 @@ class MediaLibrary {
         this.initFolderDivEvents();
         this.initModalEvent();
         this.initDropZones();
+        this.useCallBack();
     }
+
 
     /*
     observers for infinite scroll
@@ -866,5 +868,14 @@ class MediaLibrary {
         info.attr('openedBy', '')
         info.removeClass('show-image-info');
         info.addClass('close-image-info')
+    }
+
+    /**
+     * for custom events
+     */
+    useCallBack() {
+        if (typeof mediaLibraryCallBack != 'undefined') {
+            mediaLibraryCallBack(this);
+        }
     }
 }
