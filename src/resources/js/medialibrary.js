@@ -1,7 +1,5 @@
 class MediaLibrary {
-    USETYPE = Object.freeze({
-        IMAGEPREVIEW: 'imagePreview', TINYMCE: 'tinymce', INPUT: 'input',
-    });
+
 
     constructor(params) {
         this.setParameters({
@@ -9,7 +7,7 @@ class MediaLibrary {
                 selectedArray: [], // if true  , the modal closes when a media added
                 hideOnAdd: true, // if true allows the user to select multiple thumbnail
                 multipleSelect: false, useId: 1, libraryId: 2, imagePreviewerId: 2, // can be imagePreview or tinymce or input, or I don't know anymore
-                useType: this.USETYPE.IMAGEPREVIEW, limit: 36, offset: 0, isFirst: true,
+                useType: 'imagePreview', limit: 36, offset: 0, isFirst: true,
 
                 // for observer
                 responseBuffer: [],            //holds the fetched images like a buffer
