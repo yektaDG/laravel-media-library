@@ -641,12 +641,13 @@ class MediaLibrary {
             useInput.dispatchEvent(new Event('change'));    // manually initiates the change event to handle something later if we want
         }
         const addToTinymce = () => {
+            let content = '';
             for (let i = 0; i < this.selectedArray.length; i++) {
                 const element = _self.selectedArray[i];
-                let content = tinymce.get(_self.useId).getContent();
                 content += `<img alt="${$(element).attr('alt')}" src="${$(element).attr('imageurl')}" style="max-width: 1024px"/>`;
-                tinymce.get(_self.useId).setContent(content);
             }
+            tinymce.get(_self.useId).execCommand('mceInsertContent', false, content);
+            //TODO : fix selected problem
         }
         const addToImagePreview = () => {
             const lbox = $(`#${_self.useId} .lbox`);
