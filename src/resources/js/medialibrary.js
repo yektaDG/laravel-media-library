@@ -649,6 +649,7 @@ class MediaLibrary {
                 content += `<img alt="${$(element).attr('alt')}" src="${$(element).attr('imageurl')}" style="max-width: 1024px"/>`;
             }
             tinymce.get(_self.useId).execCommand('mceInsertContent', false, content);
+            _self.mlUnselectThumbnails();
             //TODO : fix selected problem
         }
         const addToImagePreview = () => {
@@ -683,6 +684,15 @@ class MediaLibrary {
 
     }
 
+    async mlUnselectThumbnails() {
+        const _self = this;
+        await $(`#library-row-${this.libraryId} .selected`).each((index, element) => {
+            $(element).removeClass('selected');
+            _self.mlSetStyleToggle($(element).parent('.th-div'), false)
+        });
+        _self.selectedArray = [];
+        await _self.mlCheckSelected();
+    }
 
     /**
      * deletes a media
