@@ -34,13 +34,13 @@ and
 Just add the following line at the end of your laravel blade after all javascript codes .
 
 ```
-    <x-mediaLibrary::ml-init :id="your prefered id(withoutspace)" ></x-mediaLibrary::ml-init>
+<x-mediaLibrary::ml-init :id="your prefered id(withoutspace)" ></x-mediaLibrary::ml-init>
 ```
 
 If you want to just access the media library view for using alongside your customized view you can use the following line .
 
 ```
-   <x-mediaLibrary::media-library :libraryId="your prefered id(withoutspace)" ></x-mediaLibrary::media-library>
+<x-mediaLibrary::media-library :libraryId="your prefered id(withoutspace)" ></x-mediaLibrary::media-library>
 ```
 
 If you want to use both on the same page beware of id conflict between them . 
