@@ -289,8 +289,8 @@ class MediaLibrary {
      */
     initSaveFolderButton() {
         const _self = this;
-        const mlSaveFolder = $('.ml-save-folder');
-        mlSaveFolder.off('click').on('click', (e) => {
+        $('.ml-save-folder').off('click').on('click', (e) => {
+            const mlSaveFolder = e.currentTarget;
             e.preventDefault()
             const folder = $(mlSaveFolder).closest('div').find('input').val();    //  finds the input saves the value that is the folder name in a variable
             _self.folders.push(`gallery-${folder}`)            //adding this folder to array of folders
