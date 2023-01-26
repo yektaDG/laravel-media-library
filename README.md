@@ -1,6 +1,7 @@
 # laravel-media-library
 
-MediaLibrary is a laravel library for handling images in laravel projects . 
+MediaLibrary is a laravel library for handling images in laravel projects . You can upload your images , modify their alt , categorize them into the folders and etc.
+It also compress your images to 4 different sizes and keeps the original size , so you can access them in client side based on user screen or use it with lazy loading .
 
 [![Packagist Version](https://img.shields.io/packagist/v/optix/media.svg)](https://packagist.org/packages/yektadg/medialibrary)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/yektaDG/laravel-media-library/blob/main/LICENSE.md)
