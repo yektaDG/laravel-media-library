@@ -190,7 +190,7 @@ function getClosest(arr, target) {
 }
 ```
 
-Note : you need to create `imageExistRoute` constant before above codes;
+Note : you need to define `imageExistRoute`  before above codes;
 
 ```
 const imageExistRoute = '{{route('medialibrary.image-exists')}}';
