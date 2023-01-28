@@ -803,7 +803,7 @@ class MediaLibrary {
         }).then(res => {
             res.data.forEach(data => {
                 const image = elements[data['id']];
-                const url = `/storage/${image['directory']}/${image['filename']}${data['element'] === true ? '-139x-' + image['extension'] : image['extension']}`;
+                const url = `/storage/${image['directory']}/${image['filename']}${data['element'] === true ? '-139x-' + image['extension'] : '.' + image['extension']}`;
 
                 const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
                 const div = document.createElement('div');
