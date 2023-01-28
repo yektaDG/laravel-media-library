@@ -172,8 +172,6 @@ class MediaController extends Controller
         $folderName = $request->folder_name;
         $currentUser = Auth::user();
         $currentUser->detachMediaTags($folderName);
-
-        return response()->json(['destroyed_toast' => 'پوشه با موفقیت حذف شد !']);
     }
 
     public function addToFolder(Request $request)

@@ -384,7 +384,7 @@ class MediaLibrary {
             "image_ids": images, "folder_name": folderName
         }).then(() => {
             _self.removeImageFromRow(selected)
-            this.notifyToast('موارد انتخاب شده با موفقیت حذف شدند.');
+            this.notifyToast(mlLang.notifyDelete);
         })
     }
 
@@ -411,7 +411,7 @@ class MediaLibrary {
         axios.post(this.moveToFolderRoute, {
             "image_ids": images, "folder_name": folderName
         }).then(() => {
-            this.notifyToast('موارد انتخاب شده با موفقیت به پوشه اضافه شدند.');
+            this.notifyToast(mlLang.notifyAddToFolder);
         });
     }
 
@@ -437,7 +437,7 @@ class MediaLibrary {
             if (result.isConfirmed) {
                 axios.post(_self.destroyFolderRoute, {"folder_name": name})
                     .then((response) => {
-                        _self.notifyToast(response.data['destroyed_toast']);
+                        _self.notifyToast(mlLang.notifyRemovedFolder);
                         if (folder.hasClass('selected-folder')) {   // if the currently selected folder is removed move to the gallery (that is the main folder)
                             const gallery = $('#gallery-folder');
                             gallery.addClass('selected-folder')
@@ -592,7 +592,7 @@ class MediaLibrary {
             "id": id, "alt_value": val
         }).then((response) => {
             if (response.status === 200) {
-                this.notifyToast('Alt با موفقیت تغییر یافت.');
+                this.notifyToast(mlLang.notifyChangeAlt);
                 $('#alt-info-' + id).html(`
                           <i class="fa fa-info-circle "> </i> :  ${val} `)
             }
@@ -648,7 +648,6 @@ class MediaLibrary {
             }
             tinymce.get(_self.useId).execCommand('mceInsertContent', false, content);
             _self.mlUnselectThumbnails();
-            //TODO : fix selected problem
         }
         const addToImagePreview = () => {
             const lbox = $(`#${_self.useId} .lbox`);
@@ -675,9 +674,9 @@ class MediaLibrary {
         }
         if (this.hideOnAdd === true) {
             $('#media-library').modal('hide');
-            this.notifyToast('موارد انتخاب شده با موفقیت اضافه شدند.')
+            this.notifyToast(mlLang.notifyAdd)
         } else {
-            this.notifyToast('موارد انتخاب شده با موفقیت به متن اضافه شدند.')
+            this.notifyToast(mlLang.notifyAddToTinymce)
         }
 
     }
@@ -788,7 +787,6 @@ class MediaLibrary {
      */
     mlRefreshLibrary(images) {
         const row = document.querySelector(`#library-row-${this.libraryId}`);
-        // showLoader();
         const toSend = [];
         const elements = {};
         const _self = this;
