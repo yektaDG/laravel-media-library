@@ -204,4 +204,10 @@ Then you can use lazy loading by adding `resizing` class and `originalSrc` attri
 
 ```
 
-Note : default image should have low disk size and be a constant image for all pages 
+Note : default image should have low disk size and be a constant image for all pages
+
+### Language
+
+You can edit `toast.blade.php` for changing toast header in `resources/views/vendor/yektadg/medialibrary`.
+
+For changing toast messages edit `mlLang.js` in `public/vendor/yektadg/medialibrary`.
