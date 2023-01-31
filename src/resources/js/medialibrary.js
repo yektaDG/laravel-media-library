@@ -593,7 +593,7 @@ class MediaLibrary {
         }).then((response) => {
             if (response.status === 200) {
                 this.notifyToast(mlLang.notifyChangeAlt);
-                $('#alt-info-' + id).html(`
+                $(`#alt-info-${id}`).html(`
                           <i class="fa fa-info-circle "> </i> :  ${val} `)
             }
         })
@@ -830,9 +830,9 @@ class MediaLibrary {
      */
     initShowInfoButton() {
         const info = $(`#library-info-${this.libraryId}`);
-        const infoButton = $('.th-info-button');
         const _self = this;
-        infoButton.off('click').on('click', (e) => {
+        $('.th-info-button').off('click').on('click', (e) => {
+            const infoButton = e.currentTarget;
             e.stopPropagation();
             if ((!$(info).hasClass('show-image-info'))) {
                 _self.mlOpenInfo(info, $(infoButton));
@@ -847,7 +847,6 @@ class MediaLibrary {
 
     mlOpenInfo(info, element) {
         const _self = this;
-        let id = 0;
         $(`#thumbnail-${info.attr('openedBy')}`).removeClass('selected-th-info');
         info.attr('openedBy', element.attr('thumbnailId'))
         info.removeClass('close-image-info')
