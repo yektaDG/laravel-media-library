@@ -4,6 +4,7 @@ namespace YektaDG\Medialibrary\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use YektaDG\Medialibrary\Console\Commands\UpdateCommand;
 
 class MediaLibraryServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,10 @@ class MediaLibraryServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/css' => public_path('vendor/yektadg/medialibrary'),
 
         ], 'public');
+
+        $this->commands([
+            UpdateCommand::class,
+        ]);
 
         $this->registerRoutes();
 
