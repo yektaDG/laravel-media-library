@@ -16,6 +16,9 @@ class MediaLibraryServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'mediaLibrary');
+
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+
         $this->publishes([
             __DIR__ . '/../resources/js' => public_path('vendor/yektadg/medialibrary'),
             __DIR__ . '/../resources/views/publish' => resource_path('views/vendor/yektadg/medialibrary'),
