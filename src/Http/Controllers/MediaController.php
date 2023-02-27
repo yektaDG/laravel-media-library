@@ -190,19 +190,20 @@ class MediaController extends Controller
     public function getAllFolders(Request $request)
     {
 
-        $currentUser = Auth::user();
+        $currentUser = auth()->user();
         $folders = [];
 
         if ($request->accessAllMedia) {
             $folders = DB::table('mediables as m')
-                ->select('tag')
+                ->select('tag as folder', 'mediable_id as uid')
                 ->where('tag', 'like', 'gallery-%')
-                ->groupBy('tag')->get()->pluck('tag')->toArray();
+                ->groupBy('tag', 'mediable_id')->get()->toArray();
         } else {
             $tags = $currentUser->getAllMediaByTag();
             foreach ($tags as $key => $value) {
                 if (str_contains($key, 'gallery-')) {
-                    $folders[] = $key;
+                    $folders[] = ['folder' => $key,
+                        'uid' => $currentUser->id];
                 }
             }
         }
