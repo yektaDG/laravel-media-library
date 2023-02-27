@@ -539,7 +539,7 @@ class ExtendedMediaUploader
             $resolution = getimagesize($file);
             $model->width = $resolution[0] ?? 0;
             $model->height = $resolution[1] ?? 0;
-            $model->alt = "this is a image";
+            $model->alt = "";
             $model->save();
         }
 
