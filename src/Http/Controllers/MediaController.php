@@ -158,10 +158,12 @@ class MediaController extends Controller
      */
     public function setAlt(Request $request)
     {
-        $user = Auth::user();
-
-
-        $image = $user->getMedia('gallery')->where('id', $request->id)->first();
+        $user = auth()->user();
+        if ($request->accessAllMedia) {
+            $image = Media::findOrFail($request->id);
+        } else {
+            $image = $user->getMedia('gallery')->where('id', $request->id)->firstOrFail();
+        }
         $image->alt = $request->alt_value;
         $image->save();
     }
