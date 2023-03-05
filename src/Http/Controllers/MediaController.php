@@ -36,7 +36,9 @@ class MediaController extends Controller
                 $join->on('me.tag', '=', DB::raw("'{$folder}'"));
             })->select('m.*')->groupBy('m.id', 'm.disk', 'm.directory', 'm.filename', 'm.extension', 'm.mime_type'
                 , 'm.aggregate_type', 'm.height', 'm.width', 'm.alt', 'm.size', 'm.variant_name', 'm.original_media_id'
-                , 'm.created_at', 'm.updated_at')->get();
+                , 'm.created_at', 'm.updated_at')
+
+                ->get();
             return $imgs;
         }
 
@@ -197,6 +199,8 @@ class MediaController extends Controller
             $folders = DB::table('mediables as m')
                 ->select('tag as folder', 'mediable_id as uid')
                 ->where('tag', 'like', 'gallery-%')
+                ->where('mediable_type',config('user_model_path'))
+                ->whereIn('mediable_id',$request->accessAllMedia)
                 ->groupBy('tag', 'mediable_id')->get()->toArray();
         } else {
             $tags = $currentUser->getAllMediaByTag();
