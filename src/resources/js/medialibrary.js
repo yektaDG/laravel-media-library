@@ -487,6 +487,7 @@ class MediaLibrary {
      */
     mlRefreshFolders(folders) {
         folders = folders.sort();
+        const _self = this;
         const r = $(`#folders-list-div-${this.libraryId}`);
         r.html('');   // empties the folder column
         // first add the gallery folder to be always on top
@@ -494,7 +495,7 @@ class MediaLibrary {
                      <div class="col mt-2 p-1  "><input type="hidden" class="folder-hidden" data-user="auth"
                                                                                      value="gallery" >
                          <div class="row">
-                             <div class="col-md-7  pb-2  text-center"><span class="ms-2">گالری</span>
+                             <div class="col-md-7  pb-2  text-center"><span class="ms-2 fw-bolder">گالری</span>
                              </div>
                              <div class="col">
                              </div>
@@ -505,9 +506,10 @@ class MediaLibrary {
         folders.forEach(data => {
             const folder = data.folder;
             const uid = data.uid;
-            r.append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  "><input type="hidden" class="folder-hidden" data-user="${uid}" value=" ${folder}"><div class=""><div class="col-md-6 text-center  mt-2 float-start"><span class="ms-2">${folder.replace('gallery-', '')}</span> </div>
- <div class="mt-2 float-end"><div class=""> <button class="add-to-folder btn btn-sm btn-icon btn-light btn-active-light-success fa-pull-left d-inline-block"><i class="fas fa-plus"></i></button>
-  <button id="delete"
+            r.append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  "><input type="hidden" class="folder-hidden" data-user="${uid}" value=" ${folder}"><div class="">
+                <div class="col-md-6 text-center  mt-2 float-start"><span class="ms-2 ${_self.userId == uid ? 'fw-bolder' : ''}">${folder.replace('gallery-', '')}</span> </div>
+                <div class="mt-2 float-end"><div class=""> <button class="add-to-folder btn btn-sm btn-icon btn-light btn-active-light-success fa-pull-left d-inline-block"><i class="fas fa-plus"></i></button>
+                <button id="delete"
                                                         class="remove-folder me-1 btn btn-sm btn-icon btn-light btn-active-light-danger fa-pull-left">
                                                          <span class="svg-icon svg-icon-5 m-0">
                                                                      <i class="text-dark-50 fonticon-trash fs-2"></i>

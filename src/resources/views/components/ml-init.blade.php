@@ -19,6 +19,7 @@
         mediaSingleRoute: '{{route('medialibrary.single')}}',
         allMediaRoute: '{{route('medialibrary.all')}}',
         libraryId: {{$id}},
+        userId: {{auth()->id()}},
         imageExistRoute: '{{route('medialibrary.image-exists')}}',
     });
 </script>
