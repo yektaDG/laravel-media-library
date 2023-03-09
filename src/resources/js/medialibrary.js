@@ -293,7 +293,7 @@ class MediaLibrary {
             const mlSaveFolder = e.currentTarget;
             e.preventDefault()
             const folder = $(mlSaveFolder).closest('div').find('input').val();    //  finds the input saves the value that is the folder name in a variable
-            _self.folders.push({'folder': `gallery-${folder}`, 'uid': '_self'})            //adding this folder to array of folders
+            _self.folders.push({'folder': `gallery-${folder}`, 'uid': _self.userId})            //adding this folder to array of folders
             $(mlSaveFolder).closest('div').find('input').val('');           //  empties the input value
             // appends the currently added folder to the folders column
             $(mlSaveFolder).closest(`#library-folder-${_self.libraryId}`).find('.folders-list').append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  ">
