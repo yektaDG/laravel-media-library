@@ -293,10 +293,10 @@ class MediaLibrary {
             const mlSaveFolder = e.currentTarget;
             e.preventDefault()
             const folder = $(mlSaveFolder).closest('div').find('input').val();    //  finds the input saves the value that is the folder name in a variable
-            _self.folders.push(`gallery-${folder}`)            //adding this folder to array of folders
-            $(this).closest('div').find('input').val('');           //  empties the input value
+            _self.folders.push({'folder': `gallery-${folder}`, 'uid': '_self'})            //adding this folder to array of folders
+            $(mlSaveFolder).closest('div').find('input').val('');           //  empties the input value
             // appends the currently added folder to the folders column
-            $(this).closest(`#library-folder-${_self.libraryId}`).find('.folders-list').append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  ">
+            $(mlSaveFolder).closest(`#library-folder-${_self.libraryId}`).find('.folders-list').append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  ">
                 <input type="hidden" class="folder-hidden" value="gallery-${folder}">
                 <div class=""><div class="col-md-6 text-center  mt-2 float-start">
                 <span class="ms-2"> ${folder.replace('gallery-', '')}</span></div>
@@ -306,7 +306,6 @@ class MediaLibrary {
                 <button id="delete"   class="remove-folder me-1 btn btn-sm btn-icon btn-light btn-active-light-danger fa-pull-left">
                 <span class="svg-icon svg-icon-5 m-0"><i class="text-dark-50 fonticon-trash fs-2"></i>
                 </span> </button></div></div>  </div></div></div>`);
-
             this.initRemoveFolderButton();
             this.initFolderDivEvents();
             this.initAddToFolderButton();
@@ -476,7 +475,7 @@ class MediaLibrary {
 
     filterFolders(filter) {
         const filtered = this.folders.filter((data) => {
-            return data.folder.replace('gallery-', '').includes(filter)
+            return data?.folder?.replace('gallery-', '').includes(filter)
         })
         this.mlRefreshFolders(filtered)
     }
