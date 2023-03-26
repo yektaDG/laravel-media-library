@@ -26,13 +26,19 @@ class MediaLibraryServiceProvider extends ServiceProvider
             __DIR__ . '/../public/media' => public_path('/vendor/yektadg/medialibrary'),
             __DIR__ . '/../config/config.php' => config_path('medialibrary.php'),
             __DIR__ . '/../resources/css' => public_path('vendor/yektadg/medialibrary'),
+            __DIR__ . '/../lang' => public_path('vendor/yektadg/medialibrary'),
         ], 'public');
 
         $this->publishes([
-            __DIR__ . '/../resources/js/medialibrary.min.js' => public_path('vendor/yektadg/medialibrary/medialibrary.min.js'),
+            __DIR__ . '/../resources/js' => public_path('vendor/yektadg/medialibrary'),
             __DIR__ . '/../public/media' => public_path('/vendor/yektadg/medialibrary'),
             __DIR__ . '/../resources/css' => public_path('vendor/yektadg/medialibrary'),
         ], 'update');
+
+        $this->publishes([
+            __DIR__ . '/../lang' => public_path('vendor/yektadg/medialibrary'),
+        ], 'update-lang');
+
 
         $this->publishes([
             __DIR__ . '/../config/config.php' => config_path('medialibrary.php'),

@@ -5,6 +5,7 @@
 <script src="{{ asset('/vendor/yektadg/medialibrary/medialibrary.min.js') }}"></script>
 
 <script>
+    const mlLang = new Multilingual('{{app()->getLocale()}}', '{{asset('/vendor/yektadg/medialibrary/')}}');
     new MediaLibrary({
         defaultImage: '{{asset('/vendor/yektadg/medialibrary/blank-image.svg')}}',
         dropzoneRoute: '{{route('medialibrary.store')}}',
