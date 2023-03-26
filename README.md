@@ -9,8 +9,10 @@ based on user screen or use it with lazy loading .
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/yektaDG/laravel-media-library/blob/main/LICENSE.md)
 
 ## Screenshots
+![laravel-media-library](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2VmMjU0MjdjYjZmYWQ3ZTk4NmE0ZjgxYjE5NTU4YjFjMGFlYjk0NCZjdD1n/ddsA0yLZ22rGQvt0Bg/giphy.gif
+)
 
-....
+
 
 ## Installation
 
