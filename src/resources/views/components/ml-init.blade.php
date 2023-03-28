@@ -19,8 +19,8 @@
         removeMediaRoute: '{{route('medialibrary.remove')}}',
         mediaSingleRoute: '{{route('medialibrary.single')}}',
         allMediaRoute: '{{route('medialibrary.all')}}',
-        libraryId: {{$id}},
-        userId: {{auth()->id()}},
+        libraryId: '{{$id}}',
+        userId: '{{auth()->id()}}',
         imageExistRoute: '{{route('medialibrary.image-exists')}}',
     });
 </script>
