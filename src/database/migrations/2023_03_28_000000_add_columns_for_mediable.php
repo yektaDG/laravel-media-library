@@ -19,6 +19,10 @@ class AddColumnsForMediable extends Migration
             $table->string('width')->default('50');
             $table->string('alt')->default('');
         });
+
+        Schema::table('mediables', function (Blueprint $table) {
+            $table->uuid('mediable_id')->change();
+        });
     }
 
     /**
@@ -32,6 +36,10 @@ class AddColumnsForMediable extends Migration
             $table->dropColumn('height');
             $table->dropColumn('width');
             $table->dropColumn('alt');
+        });
+
+        Schema::table('mediables', function (Blueprint $table) {
+            $table->dropColumn('mediable_id');
         });
     }
 }
