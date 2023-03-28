@@ -46,6 +46,8 @@ class MediaLibraryServiceProvider extends ServiceProvider
 
 
         $this->registerRoutes();
+        $this->app->register(ExtendedMediaServiceProvider::class);
+
 
     }
 
