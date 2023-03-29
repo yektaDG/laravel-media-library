@@ -107,7 +107,7 @@ class MediaController extends Controller
             $name = $media->filename;
             $notChange = ['svg', 'gif'];
             $path = $media->getDiskPath();
-            if (!in_array(strtolower($extension), $notChange))
+            if (!in_array(strtolower($extension), $notChange) && config('medialibrary.generate_sizes'))
                 $this->generateImages($path, $name, $extension);
 //                ImageProcess::dispatchSync($path, $name, $extension);    //TODO : fix here
             return response()->json(['status' => 'success', 'folder' => $request->folder, 'media' => $media]);
@@ -151,7 +151,8 @@ class MediaController extends Controller
             foreach ($images as $image) {
                 if ($image->id == $id) {
                     $user->detachMedia($image);
-                    DeleteMedia::dispatchSync($image->directory, $image->filename, $image->extension); // TODO: fix here
+                    if (config('medialibrary.generate_sizes'))
+                        DeleteMedia::dispatchSync($image->directory, $image->filename, $image->extension); // TODO: fix here
                     $image->delete();
                 }
             }

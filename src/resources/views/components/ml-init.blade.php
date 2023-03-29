@@ -21,6 +21,7 @@
         allMediaRoute: '{{route('medialibrary.all')}}',
         libraryId: "{{$id}}",
         userId: "{{auth()->id()}}",
+        checkImageExists: {!! config('medialibrary.generate_sizes') !!},
         imageExistRoute: '{{route('medialibrary.image-exists')}}',
     });
 </script>

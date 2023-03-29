@@ -734,8 +734,6 @@ class MediaLibrary {
      * @param image
      */
     mlAddSingleImage(image) {
-        const row = document.querySelector(`#library-row-${this.libraryId}`);
-        const firstChild = document.querySelector(`#library-row-${this.libraryId} .th-div:first-child`);
         const toSend = [];
         const elements = {};
         const url = `storage/${image['directory']}/${image['filename']}-139x-${image['extension']}`
@@ -745,42 +743,54 @@ class MediaLibrary {
             'id': id, 'element': '', 'url': url,
         });
         elements[id] = image;
-        axios.post(this.imageExistRoute, {           // sending request to check
-            'images': toSend
-        }).then(res => {
-            res.data.forEach(data => {
-                const image = elements[data['id']];
-                let url = `/storage/${image['directory']}/${image['filename']}`
-                if (data['element'] === true) {
-                    url += `-139x-${image['extension']}`;
-                } else {
-                    url += "." + image['extension'];
-                }
-                const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
-                const div = document.createElement('div');
-                div.classList.add('th-div')
-                div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
+        if (!_self.checkImageExists) {
+            _self.addSingleImageToUi(data)
+        } else {
+            axios.post(this.imageExistRoute, {           // sending request to check
+                'images': toSend
+            }).then(res => {
+                res.data.forEach(data => {
+                    _self.addSingleImageToUi(data)
+                });
+
+            })
+        }
+
+    }
+
+    addSingleImageToUi(elements, data) {
+        const row = document.querySelector(`#library-row-${this.libraryId}`);
+        const firstChild = document.querySelector(`#library-row-${this.libraryId} .th-div:first-child`);
+        const image = elements[data['id']];
+        let url = `/storage/${image['directory']}/${image['filename']}`;
+        const _self = this;
+        if (data['element'] === true) {
+            url += `-139x-${image['extension']}`;
+        } else {
+            url += "." + image['extension'];
+        }
+        const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
+        const div = document.createElement('div');
+        div.classList.add('th-div')
+        div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
                 alt="image" class="padding-0 img-thumbnail "  imageUrl="${imageUrl}"><div class="m-over"></div>
                 <span type="button" thumbnailId="${image['id']}" class="fw-bold btn th-info-button p-0 "><i class="far fa-edit  fs-5"></i></span>
                 <div class="th-info "><span class="fw-bolder th-text">${image['filename']}</span><span class="fw-bold th-text">${image['alt']}</span></div>`
 
-                row.insertBefore(div, firstChild);
-                $(div).on('click', () => {                          //initiating select thumbnail
-                    _self.mlSelectThumbnail($(div).find('.img-thumbnail').attr('thumbnailId'))
-                })
-                $(div).find('.th-info-button').on('click', (e) => {          //initiating show info
-                    const info = $(`#library-info-${_self.libraryId}`);
-                    e.stopPropagation();
-                    if ((!$(info).hasClass('show-image-info'))) {
-                        _self.mlOpenInfo(info, $(div));
-                    } else if ($(div).attr('thumbnailId') !== info.attr('openedBy')) {
-                        _self.mlOpenInfo(info, $(div));
-                    } else {
-                        _self.mlCloseInfo(info)
-                    }
-                })
-            });
-
+        row.insertBefore(div, firstChild);
+        $(div).on('click', () => {                          //initiating select thumbnail
+            _self.mlSelectThumbnail($(div).find('.img-thumbnail').attr('thumbnailId'))
+        })
+        $(div).find('.th-info-button').on('click', (e) => {          //initiating show info
+            const info = $(`#library-info-${_self.libraryId}`);
+            e.stopPropagation();
+            if ((!$(info).hasClass('show-image-info'))) {
+                _self.mlOpenInfo(info, $(div));
+            } else if ($(div).attr('thumbnailId') !== info.attr('openedBy')) {
+                _self.mlOpenInfo(info, $(div));
+            } else {
+                _self.mlCloseInfo(info)
+            }
         })
     }
 
@@ -788,8 +798,7 @@ class MediaLibrary {
      * refreshes the library
      * @param images
      */
-    mlRefreshLibrary(images) {
-        const row = document.querySelector(`#library-row-${this.libraryId}`);
+    async mlRefreshLibrary(images) {
         const toSend = [];
         const elements = {};
         const _self = this;
@@ -801,17 +810,35 @@ class MediaLibrary {
             });
             elements[id] = image;
         })
-        axios.post(this.imageExistRoute, {           // sending request to check
-            'images': toSend
-        }).then(res => {
-            res.data.forEach(data => {
-                const image = elements[data['id']];
-                const url = `/storage/${image['directory']}/${image['filename']}${data['element'] === true ? '-139x-' + image['extension'] : '.' + image['extension']}`;
+        if (!_self.checkImageExists) {
+            await _self.addImageToUi(toSend, elements)
+            _self.initSelectThumbnailEvent();
+            _self.initShowInfoButton();
+        } else {
+            axios.post(this.imageExistRoute, {           // sending request to check
+                'images': toSend
+            }).then(res => {
+                _self.addImageToUi(res.data)
 
-                const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
-                const div = document.createElement('div');
-                div.classList.add('th-div')
-                div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
+
+            }).then(() => {
+                _self.initSelectThumbnailEvent();
+                _self.initShowInfoButton();
+            }).catch();
+        }
+    }
+
+    addImageToUi(datas, elements) {
+        const row = document.querySelector(`#library-row-${this.libraryId}`);
+        const _self = this;
+        datas.forEach(data => {
+            const image = elements[data['id']];
+            const url = `/storage/${image['directory']}/${image['filename']}${data['element'] === true ? '-139x-' + image['extension'] : '.' + image['extension']}`;
+
+            const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
+            const div = document.createElement('div');
+            div.classList.add('th-div')
+            div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
 
             alt="image" class="padding-0 img-thumbnail "  imageUrl="${imageUrl}">
                           <div class="m-over"></div>
@@ -819,13 +846,8 @@ class MediaLibrary {
                         <div class="th-info ">
                                     <span class="fw-bolder th-text">${image['filename']}</span>
                                     <span class="fw-bold th-text">${image['alt']}</span></div>    `
-                row.insertBefore(div, _self.sentinelEl);
-            });
-
-        }).then(() => {
-            _self.initSelectThumbnailEvent();
-            _self.initShowInfoButton();
-        }).catch();
+            row.insertBefore(div, _self.sentinelEl);
+        })
     }
 
     /**
