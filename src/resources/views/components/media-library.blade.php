@@ -6,14 +6,14 @@
                      data-bs-placement="top">
                     <button id="add-media-{{$libraryId ?? ''}}" type="button"
                             class="media-library-button btn btn-light btn-sm disabled ml-add-button"
-                    >انتخاب
+                    >{{__('Select')}}
                     </button>
                 </div>
                 <div class="btn-group" style="margin-right: 5px">
                     <button id="delete-media-{{$libraryId ?? ''}}" type="button"
                             class="btn btn-light-danger btn-sm disabled ml-delete-button"
-                            >
-                        حذف
+                    >
+                        {{__('Remove')}}
                     </button>
                 </div>
 
@@ -27,8 +27,8 @@
         <div class="col-md-2">
             <div class="card-title fa-pull-left">
                 <div class="form-check form-check-sm form-check-solid form-switch fv-row">
-                    <label class="form-check-label m-2" for="multi-select-mode-{{$libraryId ?? ''}}">انتخاب
-                        چندتایی</label>
+                    <label class="form-check-label m-2"
+                           for="multi-select-mode-{{$libraryId ?? ''}}">{{__('Multi Select')}}</label>
                     <input class="multi-select-mode form-check-input w-45px h-30px" type="checkbox"
                            id="multi-select-mode-{{$libraryId ?? ''}}">
                 </div>
@@ -49,11 +49,12 @@
                                 data-bs-toggle="collapse"
                                 href="#folder-body-{{$libraryId ?? ''}}" aria-expanded="false"
                                 aria-controls="folder-body-{{$libraryId ?? ''}}">
-                            پوشه ها
+                            {{__('Folders')}}
                         </button>
                     </h4>
                     <div id="folder-body-{{$libraryId ?? ''}}" class="accordion-collapse collapse "
-                         aria-labelledby="folder-header" data-bs-parent="#folder-details-accordion-{{$libraryId ?? ''}}">
+                         aria-labelledby="folder-header"
+                         data-bs-parent="#folder-details-accordion-{{$libraryId ?? ''}}">
                         <div class="accordion-body ml-folder-scroll">
                             <div id="library-folder-{{$libraryId ?? ''}}" class="col">
                                 <div class="row">
@@ -61,8 +62,8 @@
                                         <input class="form-control form-control-sm"
                                                id="library-folder-name-{{$libraryId ?? ''}}"
                                                type="text"
-                                               placeholder="نام پوشه">
-                                        <button class="ml-save-folder btn btn-sm btn-light">ذخیره</button>
+                                               placeholder="{{__('Folder Name')}}">
+                                        <button class="ml-save-folder btn btn-sm btn-light">{{__('Save')}}</button>
                                     </div>
                                     <div class="separator separator-dashed my-3"></div>
                                     <div class="col folders-list" id="folders-list-div-{{$libraryId ?? ''}}">
@@ -78,11 +79,12 @@
                                 data-bs-toggle="collapse"
                                 href="#details-body-{{$libraryId ?? ''}}" aria-expanded="false"
                                 aria-controls="details-body-{{$libraryId ?? ''}}">
-                            جزییات
+                            {{__('Details')}}
                         </button>
                     </h4>
                     <div id="details-body-{{$libraryId ?? ''}}" class="px-0 accordion-collapse collapse "
-                         aria-labelledby="details-header-{{$libraryId ?? ''}}" data-bs-parent="#folder-details-accordion-{{$libraryId ?? ''}}">
+                         aria-labelledby="details-header-{{$libraryId ?? ''}}"
+                         data-bs-parent="#folder-details-accordion-{{$libraryId ?? ''}}">
                         <div class="accordion-body-{{$libraryId ?? ''}}">
                             <div id="library-info-{{$libraryId ?? ''}}"
                                  class="libraryInfoRow row overflow-scroll col-2">
@@ -97,8 +99,8 @@
 
             <div id="sentinel-{{$libraryId ?? ''}}" class="snti" style="bottom: 150vh;"></div>
             <button type="button" id="infinite-scroll-button-{{$libraryId ?? ''}}" class="icb mt-5" disabled>
-                <span class="disabled-text">درحال بارگذاری ...</span>
-                <span class="active-text">نمایش بیشتر</span>
+                <span class="disabled-text">{{__('Loading ...')}}</span>
+                <span class="active-text">{{__('Show More')}}</span>
             </button>
 
         </div>
