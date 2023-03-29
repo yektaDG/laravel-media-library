@@ -3,6 +3,7 @@
 namespace YektaDG\Medialibrary\Http\Controllers;
 
 
+use Intervention\Image\Facades\Image;
 use YektaDG\Medialibrary\Jobs\ImageProcess;
 use YektaDG\Medialibrary\Http\Models\ExtendedMedia as Media;
 use YektaDG\Medialibrary\Facades\ExtendedMediaFacade as MediaUploader;
@@ -10,13 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
-use Plank\Mediable\Exceptions\MediaUpload\ConfigurationException;
-use Plank\Mediable\Exceptions\MediaUpload\FileExistsException;
-use Plank\Mediable\Exceptions\MediaUpload\FileNotFoundException;
-use Plank\Mediable\Exceptions\MediaUpload\FileNotSupportedException;
-use Plank\Mediable\Exceptions\MediaUpload\FileSizeException;
-use Plank\Mediable\Exceptions\MediaUpload\ForbiddenException;
 use YektaDG\Medialibrary\Jobs\DeleteMedia;
 
 class MediaController extends Controller
@@ -114,13 +108,27 @@ class MediaController extends Controller
             $notChange = ['svg', 'gif'];
             $path = $media->getDiskPath();
             if (!in_array(strtolower($extension), $notChange))
-                ImageProcess::dispatchSync($path, $name, $extension);    //TODO : fix here
+                $this->generateImages($path, $name, $extension);
+//                ImageProcess::dispatchSync($path, $name, $extension);    //TODO : fix here
             return response()->json(['status' => 'success', 'folder' => $request->folder, 'media' => $media]);
 
-        } catch (ValidationException|ConfigurationException|FileExistsException|FileNotFoundException|FileNotSupportedException|FileSizeException|ForbiddenException $e) {
+        } catch (\Exception $e) {
             return response()->json(['failed']);
         }
 
+    }
+
+    private function generateImages($diskpath, $filename, $extension)
+    {
+        $sizes = [
+            139,
+            1280,
+            1500,
+        ];
+        foreach ($sizes as $size) {
+            $img = Image::make('storage/' . $diskpath)->widen($size)
+                ->save('storage/uploads/images/' . now()->year . '/' . now()->month . '/' . $filename . '-' . $size . 'x' . "-{$extension}", $size != 139 ? 80 : 100, 'webp');
+        }
     }
 
     /**
