@@ -9,11 +9,11 @@
                     <div class="dz-message needsclick">
                         <i class="bi bi-file-earmark-arrow-up text-primary fs-3x"></i>
                         <div class=" ms-4">
-                            <h5 class="fs-6  text-gray-900 "> برای بارگذاری فایل‌ها را بکشید . یا کلیک کنید </h5>
+                            <h5 class="fs-6  text-gray-900 "> {{__('Click or drag files here to upload')}}</h5>
                             <span
-                                    class="form-text fs-6 text-muted">حداکثر اندازه پرونده برای بارگذاری: 15 مگابایت .</span>
+                                    class="form-text fs-6 text-muted">{{__('Max upload size : 15mb')}}</span>
 
-                            <div class="text-muted fs-7 mt-1"> فرمت‌های قابل قبول
+                            <div class="text-muted fs-7 mt-1"> {{__('Accepted Formats')}}
                                 png, jpg, jpeg, gif, webp, svg
                             </div>
                         </div>
