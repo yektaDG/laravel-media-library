@@ -103,7 +103,7 @@ class MediaController extends Controller
             $name = str_replace(array($extension, '.'), '', $image->getClientOriginalName());
             $name .= Str::random(6);
             $media = MediaUploader::fromSource($image)
-                ->toDestination(config('medialibrary_storage'), 'uploads/images/' . now()->year . '/' . now()->month)
+                ->toDestination(config('medialibrary.medialibrary_storage'), 'uploads/images/' . now()->year . '/' . now()->month)
                 ->useFilename($name)
                 ->upload();
             $extension = $media->extension;
