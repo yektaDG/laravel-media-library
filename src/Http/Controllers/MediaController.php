@@ -3,7 +3,7 @@
 namespace YektaDG\Medialibrary\Http\Controllers;
 
 
-use App\Jobs\ImageProcess;
+use YektaDG\Medialibrary\Jobs\ImageProcess;
 use YektaDG\Medialibrary\Http\Models\ExtendedMedia as Media;
 use YektaDG\Medialibrary\Facades\ExtendedMediaFacade as MediaUploader;
 use Illuminate\Http\Request;
@@ -103,7 +103,7 @@ class MediaController extends Controller
             $name = str_replace(array($extension, '.'), '', $image->getClientOriginalName());
             $name .= Str::random(6);
             $media = MediaUploader::fromSource($image)
-                ->toDestination('public', 'uploads/images/' . now()->year . '/' . now()->month)
+                ->toDestination(config('medialibrary_storage'), 'uploads/images/' . now()->year . '/' . now()->month)
                 ->useFilename($name)
                 ->upload();
             $extension = $media->extension;
