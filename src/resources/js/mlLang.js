@@ -2,7 +2,7 @@ class Multilingual {
     constructor(locale, langPath) {
         this.lang = locale || navigator.language || 'en';
         this.translations = {};
-        this.loadTranslations(locale, langPath);
+        this.loadTranslations(locale, langPath).then(() => this.createGetters());
     }
 
     async loadTranslations(locale, langPath) {
@@ -19,27 +19,17 @@ class Multilingual {
         this.lang = locale;
     }
 
-    get notifyDelete() {
-        return this.translations.notifyDelete;
-    }
-
-    get notifyAdd() {
-        return this.translations.notifyAdd;
-    }
-
-    get notifyAddToTinymce() {
-        return this.translations.notifyAddToTinymce;
-    }
-
-    get notifyAddToFolder() {
-        return this.translations.notifyAddToFolder;
-    }
-
-    get notifyChangeAlt() {
-        return this.translations.notifyChangeAlt;
-    }
-
-    get notifyRemovedFolder() {
-        return this.translations.notifyRemovedFolder;
+    /**
+     * creates getter for each key of json file
+     */
+    createGetters() {
+        const keys = Object.keys(this.translations);
+        for (const key of keys) {
+            Object.defineProperty(this, key, {
+                get: function () {
+                    return this.translations[key];
+                }
+            });
+        }
     }
 }
