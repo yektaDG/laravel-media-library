@@ -121,13 +121,13 @@ class MediaController extends Controller
     private function generateImages($diskpath, $filename, $extension)
     {
         $sizes = [
-            139,
-            1280,
-            1500,
+            139 => 139,
+            1280 => 1280,
+            1500 => 2000,
         ];
-        foreach ($sizes as $size) {
+        foreach ($sizes as $key => $size) {
             $img = Image::make('storage/' . $diskpath)->widen($size)
-                ->save('storage/uploads/images/' . now()->year . '/' . now()->month . '/' . $filename . '-' . $size . 'x' . "-{$extension}", $size != 139 ? 80 : 100, 'webp');
+                ->save('storage/uploads/images/' . now()->year . '/' . now()->month . '/' . $filename . '-' . $key . 'x' . "-{$extension}", $size != 139 ? 80 : 100, 'webp');
         }
     }
 
