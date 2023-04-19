@@ -1,7 +1,8 @@
 <link rel="stylesheet" href="{{asset('/vendor/yektadg/medialibrary/medialibrary.min.css')}}">
 
 <x-mediaLibrary::media-library-modal :id="$id"></x-mediaLibrary::media-library-modal>
-<script src="{{ asset('/vendor/yektadg/medialibrary/mlLang.js') }}"></script>
+<script src="{{ asset('/vendor/yektadg/medialibrary/mlLang.min.js') }}"></script>
+<script src="{{ asset('/vendor/yektadg/medialibrary/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('/vendor/yektadg/medialibrary/medialibrary.min.js') }}"></script>
 
 <script>

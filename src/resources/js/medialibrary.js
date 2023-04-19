@@ -293,7 +293,7 @@ class MediaLibrary {
             const mlSaveFolder = e.currentTarget;
             e.preventDefault()
             const folder = $(mlSaveFolder).closest('div').find('input').val();    //  finds the input saves the value that is the folder name in a variable
-            _self.folders.push({'folder': `gallery-${folder}`, 'uid': _self.userId})            //adding this folder to array of folders
+            _self.folders.push({'folder': `gallery-${folder}`, 'uid': '_self'})            //adding this folder to array of folders
             $(mlSaveFolder).closest('div').find('input').val('');           //  empties the input value
             // appends the currently added folder to the folders column
             $(mlSaveFolder).closest(`#library-folder-${_self.libraryId}`).find('.folders-list').append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  ">
@@ -487,7 +487,6 @@ class MediaLibrary {
      */
     mlRefreshFolders(folders) {
         folders = folders.sort();
-        const _self = this;
         const r = $(`#folders-list-div-${this.libraryId}`);
         r.html('');   // empties the folder column
         // first add the gallery folder to be always on top
@@ -495,7 +494,7 @@ class MediaLibrary {
                      <div class="col mt-2 p-1  "><input type="hidden" class="folder-hidden" data-user="auth"
                                                                                      value="gallery" >
                          <div class="row">
-                             <div class="col-md-7  pb-2  text-center"><span class="ms-2 fw-bolder">گالری</span>
+                             <div class="col-md-7  pb-2  text-center"><span class="ms-2">گالری</span>
                              </div>
                              <div class="col">
                              </div>
@@ -506,10 +505,9 @@ class MediaLibrary {
         folders.forEach(data => {
             const folder = data.folder;
             const uid = data.uid;
-            r.append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  "><input type="hidden" class="folder-hidden" data-user="${uid}" value=" ${folder}"><div class="">
-                <div class="col-md-6 text-center  mt-2 float-start"><span class="ms-2 ${_self.userId == uid ? 'fw-bolder' : ''}">${folder.replace('gallery-', '')}</span> </div>
-                <div class="mt-2 float-end"><div class=""> <button class="add-to-folder btn btn-sm btn-icon btn-light btn-active-light-success fa-pull-left d-inline-block"><i class="fas fa-plus"></i></button>
-                <button id="delete"
+            r.append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  "><input type="hidden" class="folder-hidden" data-user="${uid}" value=" ${folder}"><div class=""><div class="col-md-6 text-center  mt-2 float-start"><span class="ms-2">${folder.replace('gallery-', '')}</span> </div>
+ <div class="mt-2 float-end"><div class=""> <button class="add-to-folder btn btn-sm btn-icon btn-light btn-active-light-success fa-pull-left d-inline-block"><i class="fas fa-plus"></i></button>
+  <button id="delete"
                                                         class="remove-folder me-1 btn btn-sm btn-icon btn-light btn-active-light-danger fa-pull-left">
                                                          <span class="svg-icon svg-icon-5 m-0">
                                                                      <i class="text-dark-50 fonticon-trash fs-2"></i>
@@ -609,7 +607,24 @@ class MediaLibrary {
             _self.mlAddMediaForUsage()
         });
         $(`.ml-delete-button`).off('click').on('click', () => {
-            _self.mlDeleteMedia()
+            Swal.fire({
+                title: mlLang.confirmText,
+                text: mlLang.confirmText2,
+                icon: 'warning',
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'btn btn-light-danger btn-sm',
+                    cancelButton: 'btn btn-light btn-sm',
+                },
+                buttonsStyling: false,
+
+                cancelButtonText: mlLang.cancelButton,
+                confirmButtonText: mlLang.confirmButton
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    _self.mlDeleteMedia()
+                }
+            })
         })
     }
 
@@ -714,6 +729,7 @@ class MediaLibrary {
 
                 await _self.removeImageFromRow(btns);
                 _self.mlCheckSelected();
+                this.notifyToast(mlLang.notifyDelete)
             }
         })
     }
@@ -734,6 +750,8 @@ class MediaLibrary {
      * @param image
      */
     mlAddSingleImage(image) {
+        const row = document.querySelector(`#library-row-${this.libraryId}`);
+        const firstChild = document.querySelector(`#library-row-${this.libraryId} .th-div:first-child`);
         const toSend = [];
         const elements = {};
         const url = `storage/${image['directory']}/${image['filename']}-139x-${image['extension']}`
@@ -743,54 +761,42 @@ class MediaLibrary {
             'id': id, 'element': '', 'url': url,
         });
         elements[id] = image;
-        if (!_self.checkImageExists) {
-            _self.addSingleImageToUi(data)
-        } else {
-            axios.post(this.imageExistRoute, {           // sending request to check
-                'images': toSend
-            }).then(res => {
-                res.data.forEach(data => {
-                    _self.addSingleImageToUi(data)
-                });
-
-            })
-        }
-
-    }
-
-    addSingleImageToUi(elements, data) {
-        const row = document.querySelector(`#library-row-${this.libraryId}`);
-        const firstChild = document.querySelector(`#library-row-${this.libraryId} .th-div:first-child`);
-        const image = elements[data['id']];
-        let url = `/storage/${image['directory']}/${image['filename']}`;
-        const _self = this;
-        if (data['element'] === true) {
-            url += `-139x-${image['extension']}`;
-        } else {
-            url += "." + image['extension'];
-        }
-        const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
-        const div = document.createElement('div');
-        div.classList.add('th-div')
-        div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
+        axios.post(this.imageExistRoute, {           // sending request to check
+            'images': toSend
+        }).then(res => {
+            res.data.forEach(data => {
+                const image = elements[data['id']];
+                let url = `/storage/${image['directory']}/${image['filename']}`
+                if (data['element'] === true) {
+                    url += `-139x-${image['extension']}`;
+                } else {
+                    url += "." + image['extension'];
+                }
+                const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
+                const div = document.createElement('div');
+                div.classList.add('th-div')
+                div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
                 alt="image" class="padding-0 img-thumbnail "  imageUrl="${imageUrl}"><div class="m-over"></div>
                 <span type="button" thumbnailId="${image['id']}" class="fw-bold btn th-info-button p-0 "><i class="far fa-edit  fs-5"></i></span>
                 <div class="th-info "><span class="fw-bolder th-text">${image['filename']}</span><span class="fw-bold th-text">${image['alt']}</span></div>`
 
-        row.insertBefore(div, firstChild);
-        $(div).on('click', () => {                          //initiating select thumbnail
-            _self.mlSelectThumbnail($(div).find('.img-thumbnail').attr('thumbnailId'))
-        })
-        $(div).find('.th-info-button').on('click', (e) => {          //initiating show info
-            const info = $(`#library-info-${_self.libraryId}`);
-            e.stopPropagation();
-            if ((!$(info).hasClass('show-image-info'))) {
-                _self.mlOpenInfo(info, $(div));
-            } else if ($(div).attr('thumbnailId') !== info.attr('openedBy')) {
-                _self.mlOpenInfo(info, $(div));
-            } else {
-                _self.mlCloseInfo(info)
-            }
+                row.insertBefore(div, firstChild);
+                $(div).on('click', () => {                          //initiating select thumbnail
+                    _self.mlSelectThumbnail($(div).find('.img-thumbnail').attr('thumbnailId'))
+                })
+                $(div).find('.th-info-button').on('click', (e) => {          //initiating show info
+                    const info = $(`#library-info-${_self.libraryId}`);
+                    e.stopPropagation();
+                    if ((!$(info).hasClass('show-image-info'))) {
+                        _self.mlOpenInfo(info, $(div));
+                    } else if ($(div).attr('thumbnailId') !== info.attr('openedBy')) {
+                        _self.mlOpenInfo(info, $(div));
+                    } else {
+                        _self.mlCloseInfo(info)
+                    }
+                })
+            });
+
         })
     }
 
@@ -798,7 +804,8 @@ class MediaLibrary {
      * refreshes the library
      * @param images
      */
-    async mlRefreshLibrary(images) {
+    mlRefreshLibrary(images) {
+        const row = document.querySelector(`#library-row-${this.libraryId}`);
         const toSend = [];
         const elements = {};
         const _self = this;
@@ -810,35 +817,17 @@ class MediaLibrary {
             });
             elements[id] = image;
         })
-        if (!_self.checkImageExists) {
-            await _self.addImageToUi(toSend, elements)
-            _self.initSelectThumbnailEvent();
-            _self.initShowInfoButton();
-        } else {
-            axios.post(this.imageExistRoute, {           // sending request to check
-                'images': toSend
-            }).then(res => {
-                _self.addImageToUi(res.data)
+        axios.post(this.imageExistRoute, {           // sending request to check
+            'images': toSend
+        }).then(res => {
+            res.data.forEach(data => {
+                const image = elements[data['id']];
+                const url = `/storage/${image['directory']}/${image['filename']}${data['element'] === true ? '-139x-' + image['extension'] : '.' + image['extension']}`;
 
-
-            }).then(() => {
-                _self.initSelectThumbnailEvent();
-                _self.initShowInfoButton();
-            }).catch();
-        }
-    }
-
-    addImageToUi(datas, elements) {
-        const row = document.querySelector(`#library-row-${this.libraryId}`);
-        const _self = this;
-        datas.forEach(data => {
-            const image = elements[data['id']];
-            const url = `/storage/${image['directory']}/${image['filename']}${data['element'] === true ? '-139x-' + image['extension'] : '.' + image['extension']}`;
-
-            const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
-            const div = document.createElement('div');
-            div.classList.add('th-div')
-            div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
+                const imageUrl = `/storage/${image['directory']}/${image['filename']}.${image['extension']}`;     // for having the original url for getting it
+                const div = document.createElement('div');
+                div.classList.add('th-div')
+                div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
 
             alt="image" class="padding-0 img-thumbnail "  imageUrl="${imageUrl}">
                           <div class="m-over"></div>
@@ -846,8 +835,13 @@ class MediaLibrary {
                         <div class="th-info ">
                                     <span class="fw-bolder th-text">${image['filename']}</span>
                                     <span class="fw-bold th-text">${image['alt']}</span></div>    `
-            row.insertBefore(div, _self.sentinelEl);
-        })
+                row.insertBefore(div, _self.sentinelEl);
+            });
+
+        }).then(() => {
+            _self.initSelectThumbnailEvent();
+            _self.initShowInfoButton();
+        }).catch();
     }
 
     /**

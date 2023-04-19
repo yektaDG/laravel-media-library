@@ -4,5 +4,11 @@
   "notifyAddToTinymce": "Selected items added successfully",
   "notifyAddToFolder": "Selected items added to folder successfully",
   "notifyChangeAlt": "Selected item alt changed successfully",
-  "notifyRemovedFolder": "Selected folder removed successfully"
+  "notifyRemovedFolder": "Selected folder removed successfully",
+  "confirmText": "Are you sure?",
+  "confirmText2": "You won't be able to revert this!",
+  "confirmButton": "Yes, delete it!",
+  "cancelButton": "Cancel",
+  "deleted": "Deleted!",
+  "ok": "Ok"
 }
