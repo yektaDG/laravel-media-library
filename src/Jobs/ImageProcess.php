@@ -22,7 +22,7 @@ class ImageProcess implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($diskpath, $filename,$extension)
+    public function __construct($diskpath, $filename, $extension)
     {
         $this->diskpath = $diskpath;
         $this->filename = $filename;
@@ -37,13 +37,13 @@ class ImageProcess implements ShouldQueue
     public function handle()
     {
         $sizes = [
-            139,
-            1280,
-            1500,
+            139 => 139,
+            1280 => 1280,
+            1500 => 2000,
         ];
-        foreach ($sizes as $size) {
+        foreach ($sizes as $key => $size) {
             $img = Image::make('storage/' . $this->diskpath)->widen($size)
-                ->save('storage/uploads/images/' . now()->year . '/' . now()->month . '/' . $this->filename . '-' . $size . 'x' . "-{$this->extension}", $size != 139 ? 80 : 100, 'webp');
+                ->save('storage/uploads/images/' . now()->year . '/' . now()->month . '/' . $this->filename . '-' . $key . 'x' . "-{$this->extension}", $size != 139 ? 80 : 100, 'webp');
         }
     }
 
