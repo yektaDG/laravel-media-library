@@ -29,5 +29,10 @@
   "require": {
     "intervention/image": "^2.7",
     "plank/laravel-mediable": "^5.8"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "php artisan vendor:publish --provider=\"YektaDG\\Medialibrary\\Providers\\MediaLibraryServiceProvider\""
+    ]
   }
 }
