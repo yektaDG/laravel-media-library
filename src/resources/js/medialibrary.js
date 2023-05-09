@@ -829,7 +829,7 @@ class MediaLibrary {
                 div.classList.add('th-div')
                 div.innerHTML = `  <img id="thumbnail-${image['id']}"  thumbnailId="${image['id']}" src="${url}"
 
-            alt="image" class="padding-0 img-thumbnail "  imageUrl="${imageUrl}">
+            alt="${image['alt']}" class="padding-0 img-thumbnail "  imageUrl="${imageUrl}">
                           <div class="m-over"></div>
                                     <span type="button" thumbnailId="${image['id']}" class="fw-bold btn th-info-button p-0 "><i class="far fa-edit  fs-5"></i></span>
                         <div class="th-info ">
