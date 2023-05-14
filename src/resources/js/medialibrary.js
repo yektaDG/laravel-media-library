@@ -217,7 +217,7 @@ class MediaLibrary {
             lbox.attr('src', _self.defaultImage);
             lbox.css('background-image', '');
             let hiddenInputQuery = '#' + _self.imagePreviewerId + ' .hidden-image-input';   //gets the hidden input that contains the image url
-            $(hiddenInputQuery).val("none");
+            $(hiddenInputQuery).val("none").trigger('change');
         });
     }
 
@@ -674,7 +674,7 @@ class MediaLibrary {
             });
             const src = images[images.length - 1].getAttribute('imageurl');
             lbox.attr('src', src);
-            $(`#${_self.useId} .hidden-image-input`).val(src);
+            $(`#${_self.useId} .hidden-image-input`).val(src).trigger('change');
         }
         if (images.length > 0) {
             switch (this.useType) {
