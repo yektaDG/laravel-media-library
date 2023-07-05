@@ -178,6 +178,7 @@ class MediaLibrary {
             $(`#add-media-${_self.libraryId}`).addClass('disabled');
             $('#gallery-folder').trigger('click')    // to prevent previous selected folder's images  show on next open
             _self.hasMore = false;
+            _self.responseBuffer = [];
             _self.handleObserve().then(() => {
                 _self.hasMore = true;
                 _self.isFirst = true;
@@ -879,7 +880,8 @@ class MediaLibrary {
                 info.html(infos);
                 info.find('.th-info-details').removeClass('d-none');
                 $(`#details-body-${_self.libraryId}`).collapse('show');
-                $('.th-info-details').find('.setAlt-btn').off('click').on('click', () => {
+                $('.th-info-details').find('.setAlt-btn').off('click').on('click', (e) => {
+                    e.stopPropagation();
                     _self.setAlt(response.data['id'])
                 })
             }
