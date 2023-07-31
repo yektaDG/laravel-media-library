@@ -789,7 +789,7 @@ class MediaLibrary {
                     const info = $(`#library-info-${_self.libraryId}`);
                     e.stopPropagation();
                     if ((!$(info).hasClass('show-image-info'))) {
-                        _self.mlOpenInfo(info, $(div));
+                        _self.mlOpenInfo(info, $(e.currentTarget));
                     } else if ($(div).attr('thumbnailId') !== info.attr('openedBy')) {
                         _self.mlOpenInfo(info, $(div));
                     } else {
