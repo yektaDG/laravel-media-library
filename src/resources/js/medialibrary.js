@@ -160,6 +160,7 @@ class MediaLibrary {
         const _self = this;
         const mediaLibraryModal = $('.media-library-modal');
         mediaLibraryModal.off('shown.bs.modal').on('shown.bs.modal', async (e) => {
+            _self.responseBuffer = [];
             _self.libraryId = $(e.currentTarget).attr('libraryId');        //sets the global libraryId that currently using
             _self.initSearchFolder();
             await _self.mlGetAllFolders().then(async () => {          // it is important to get the folders first because the observer uses the folder name to fetch images
@@ -178,7 +179,6 @@ class MediaLibrary {
             $(`#add-media-${_self.libraryId}`).addClass('disabled');
             $('#gallery-folder').trigger('click')    // to prevent previous selected folder's images  show on next open
             _self.hasMore = false;
-            _self.responseBuffer = [];
             _self.handleObserve().then(() => {
                 _self.hasMore = true;
                 _self.isFirst = true;
@@ -880,8 +880,7 @@ class MediaLibrary {
                 info.html(infos);
                 info.find('.th-info-details').removeClass('d-none');
                 $(`#details-body-${_self.libraryId}`).collapse('show');
-                $('.th-info-details').find('.setAlt-btn').off('click').on('click', (e) => {
-                    e.stopPropagation();
+                $('.th-info-details').find('.setAlt-btn').off('click').on('click', () => {
                     _self.setAlt(response.data['id'])
                 })
             }
