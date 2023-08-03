@@ -26,9 +26,6 @@ class CreateMediableTables extends Migration
                     $table->string('extension', 32);
                     $table->string('mime_type', 128);
                     $table->string('aggregate_type', 32);
-                    $table->string('height')->default('50');
-                    $table->string('width')->default('50');
-                    $table->string('alt')->default('');
                     $table->integer('size')->unsigned();
                     $table->timestamps();
                     $table->unique(['disk', 'directory', 'filename', 'extension']);
