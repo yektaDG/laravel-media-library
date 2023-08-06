@@ -531,7 +531,7 @@ class MediaLibrary {
             this.mlSetStyleToggle($(btn).closest('.th-div'), false)
 
             this.mlCheckSelected();
-            this.selectedArray = this.selectedArray.filter(item => item !== btn)
+            this.selectedArray = this.selectedArray.filter(item => item.attr('id') !== btn.attr('id'))
         } else {
             if (!$(`#multi-select-mode-${this.libraryId}`).is(':checked')) {
                 const forDelete = []
