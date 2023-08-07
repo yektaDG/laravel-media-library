@@ -237,11 +237,13 @@ class MediaLibrary {
             } else {        // if the button unchecked
                 addMediaButton.prop('disabled', false);     //  removes the tooltip
                 addMediaButton.closest('div').attr('data-bs-original-title', '');
+
+                this.selectedArray = []
                 $(`#library-row-${_self.libraryId} .selected`).each((index, element) => {
-                    if (index !== 0) {
-                        $(element).removeClass('selected');
-                        _self.mlSetStyleToggle($(element).parent('.th-div'), false)
-                    }
+                    $(element).removeClass('selected');
+
+
+                    _self.mlSetStyleToggle($(element).parent('.th-div'), false)
                 });
             }
         })
