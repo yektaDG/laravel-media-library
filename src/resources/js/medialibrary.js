@@ -177,6 +177,7 @@ class MediaLibrary {
         mediaLibraryModal.off('hidden.bs.modal').on('hidden.bs.modal', () => {
             $('.library-row .selected').removeClass('selected');
             $(`#add-media-${_self.libraryId}`).addClass('disabled');
+            _self.selectedArray = [];
             $('#gallery-folder').trigger('click')    // to prevent previous selected folder's images  show on next open
             _self.hasMore = false;
             _self.handleObserve().then(() => {
