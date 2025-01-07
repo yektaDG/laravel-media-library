@@ -25,12 +25,11 @@ class MediaController extends Controller
 
         function getAllImagesInLibrary($folder)
         {
+            DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
             $imgs = DB::table('media as m')->join('mediables as me', function ($join) use ($folder) {
                 $join->on('m.id', '=', 'me.media_id');
                 $join->on('me.tag', '=', DB::raw("'{$folder}'"));
-            })->select('m.*')->groupBy('m.id', 'm.disk', 'm.directory', 'm.filename', 'm.extension', 'm.mime_type'
-                , 'm.aggregate_type', 'm.height', 'm.width', 'm.alt', 'm.size', 'm.variant_name', 'm.original_media_id'
-                , 'm.created_at', 'm.updated_at')->get();
+            })->select('m.*')->groupBy('m.id')->get();
             return $imgs;
         }
 
@@ -201,6 +200,7 @@ class MediaController extends Controller
 
         $currentUser = auth()->user();
         $folders = [];
+        DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
 
         if ($request->accessAllMedia) {
             $folders = DB::table('mediables as m')
