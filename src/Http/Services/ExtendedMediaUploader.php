@@ -679,10 +679,11 @@ class ExtendedMediaUploader
         $model->filename = $filename;
         $model->extension = $this->verifyExtension($extension);
 
-        if (!$storage->has($model->getDiskPath())) {
+        if (!$storage->exists($model->getDiskPath())) {
             throw FileNotFoundException::fileNotFound($model->getDiskPath());
         }
 
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
         $model->mime_type = $this->verifyMimeType($storage->mimeType($model->getDiskPath()));
         $model->aggregate_type = $this->inferAggregateType($model->mime_type, $model->extension);
         $model->size = $this->verifyFileSize($storage->size($model->getDiskPath()));
@@ -712,6 +713,7 @@ class ExtendedMediaUploader
         $storage = $this->filesystem->disk($media->disk);
 
         $media->size = $this->verifyFileSize($storage->size($media->getDiskPath()));
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $storage */
         $media->mime_type = $this->verifyMimeType($storage->mimeType($media->getDiskPath()));
         $media->aggregate_type = $this->inferAggregateType($media->mime_type, $media->extension);
 
@@ -781,9 +783,8 @@ class ExtendedMediaUploader
         if (empty($this->source)) {
             throw ConfigurationException::noSourceProvided();
         }
-        if (!$this->source->valid()) {
-            throw FileNotFoundException::fileNotFound($this->source->path());
-        }
+        // Note: In plank/laravel-mediable 6.3.1+, validation is handled in the adapter constructor
+        // The valid() method has been removed from SourceAdapterInterface
     }
 
     /**
@@ -847,7 +848,7 @@ class ExtendedMediaUploader
     {
         $storage = $this->filesystem->disk($model->disk);
 
-        if ($storage->has($model->getDiskPath())) {
+        if ($storage->exists($model->getDiskPath())) {
             $this->handleDuplicate($model);
         }
     }
@@ -940,7 +941,7 @@ class ExtendedMediaUploader
             }
             $path = "{$model->directory}/{$filename}.{$model->extension}";
             ++$counter;
-        } while ($storage->has($path));
+        } while ($storage->exists($path));
 
         return $filename;
     }
@@ -973,26 +974,15 @@ class ExtendedMediaUploader
      */
     private function generateHash(): string
     {
-        $ctx = hash_init('md5');
-
-        // We don't need to read the file contents if the source has a path
-        if ($this->source->path()) {
-            hash_update_file($ctx, $this->source->path());
-        } else {
-            hash_update($ctx, $this->source->contents());
-        }
-
-        return hash_final($ctx);
+        // In plank/laravel-mediable 6.3.1+, use the hash() method from SourceAdapterInterface
+        return $this->source->hash('md5');
     }
 
 
     private function writeToDisk(Media $model): void
     {
-        $stream = $this->source->getStreamResource();
-
-        if (!is_resource($stream)) {
-            $stream = $this->source->contents();
-        };
+        // In plank/laravel-mediable 6.3.1+, use getStream() which returns StreamInterface
+        $stream = $this->source->getStream();
 
         $this->filesystem->disk($model->disk)
             ->put(
@@ -1000,10 +990,6 @@ class ExtendedMediaUploader
                 $stream,
                 $this->getOptions()
             );
-
-        if (is_resource($stream)) {
-            fclose($stream);
-        }
     }
 
     public function getOptions(): array

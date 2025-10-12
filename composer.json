@@ -17,7 +17,7 @@
     }
   ],
   "require-dev": {
-    "orchestra/testbench": "7.0"
+    "orchestra/testbench": "^10.6"
   },
   "extra": {
     "laravel": {
@@ -27,8 +27,8 @@
     }
   },
   "require": {
-    "intervention/image": "^2.7",
-    "plank/laravel-mediable": "^5.8"
+    "intervention/image": "^3.11",
+    "plank/laravel-mediable": "^6.3.1"
   },
   "scripts": {
     "post-install-cmd": [

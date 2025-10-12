@@ -3,13 +3,16 @@
 namespace YektaDG\Medialibrary\Http\Controllers;
 
 
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 use YektaDG\Medialibrary\Jobs\ImageProcess;
 use YektaDG\Medialibrary\Http\Models\ExtendedMedia as Media;
 use YektaDG\Medialibrary\Facades\ExtendedMediaFacade as MediaUploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use YektaDG\Medialibrary\Jobs\DeleteMedia;
 
@@ -124,9 +127,27 @@ class MediaController extends Controller
             1280 => 1280,
             1500 => 2000,
         ];
+        
+        // Try to use available driver
+        try {
+            $manager = new ImageManager(new GdDriver());
+        } catch (\Exception $e) {
+            try {
+                $manager = new ImageManager(new ImagickDriver());
+            } catch (\Exception $e2) {
+                // No image processing driver available, skip image generation
+                Log::warning('No image processing driver available (GD or Imagick)');
+                return;
+            }
+        }
+        
         foreach ($sizes as $key => $size) {
-            $img = Image::make('storage/' . $diskpath)->widen($size)
-                ->save('storage/uploads/images/' . now()->year . '/' . now()->month . '/' . $filename . '-' . $key . 'x' . "-{$extension}", $size != 139 ? 80 : 100, 'webp');
+            $img = $manager->read('storage/' . $diskpath)
+                ->scaleDown(width: $size)
+                ->toWebp(quality: $size != 139 ? 80 : 100);
+            
+            $outputPath = 'storage/uploads/images/' . now()->year . '/' . now()->month . '/' . $filename . '-' . $key . 'x' . ".webp";
+            $img->save($outputPath);
         }
     }
 
