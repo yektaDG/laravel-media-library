@@ -73,7 +73,7 @@ class MediaLibrary {
         if (this.requestPending) return;
 
         this.requestPending = true;
-        const folder = $(`#library-folder-${this.libraryId} .folder-div.selected-folder .folder-hidden`).val(); // finding the selected folder name
+        const folder = ($(`#library-folder-${this.libraryId} .folder-div.selected-folder .folder-hidden`).val() || '').trim(); // finding the selected folder name
         axios.get(this.allMediaRoute, {
             params: {
                 limit: this.limit, offset: this.offset, folder: folder
@@ -145,7 +145,7 @@ class MediaLibrary {
             });
             //  adding the folder to the request to force the uploaded image to show in selected folder
             mlDropzone.on("sending", (file, xhr, formData) => {
-                const folder = $('.folder-div.selected-folder .folder-hidden').val()
+                const folder = ($('.folder-div.selected-folder .folder-hidden').val() || '').trim()
                 if (folder !== undefined && folder !== 'gallery' && folder.length > 0) {
                     formData.append("folder", folder);
                 }
@@ -296,12 +296,19 @@ class MediaLibrary {
         $('.ml-save-folder').off('click').on('click', (e) => {
             const mlSaveFolder = e.currentTarget;
             e.preventDefault()
-            const folder = $(mlSaveFolder).closest('div').find('input').val();    //  finds the input saves the value that is the folder name in a variable
-            _self.folders.push({'folder': `gallery-${folder}`, 'uid': '_self'})            //adding this folder to array of folders
-            $(mlSaveFolder).closest('div').find('input').val('');           //  empties the input value
+            const folder = ($(mlSaveFolder).closest('div').find('input').val() || '').trim();
+            if (!folder) return;
+            const folderKey = folder.startsWith('gallery-') ? folder : `gallery-${folder}`;
+            if (_self.folders.some((f) => (f.folder || f) === folderKey)) {
+                $(mlSaveFolder).closest('div').find('input').val('');
+                _self.filterFolders('');
+                return;
+            }
+            _self.folders.push({'folder': folderKey, 'uid': '_self'})
+            $(mlSaveFolder).closest('div').find('input').val('');
             // appends the currently added folder to the folders column
             $(mlSaveFolder).closest(`#library-folder-${_self.libraryId}`).find('.folders-list').append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  ">
-                <input type="hidden" class="folder-hidden" value="gallery-${folder}">
+                <input type="hidden" class="folder-hidden" value="${folderKey}">
                 <div class=""><div class="col-md-6 text-center  mt-2 float-start">
                 <span class="ms-2"> ${folder.replace('gallery-', '')}</span></div>
                 <div class="mt-2 float-end"><div class="">
@@ -334,8 +341,9 @@ class MediaLibrary {
         removeFolderButton.off('click').on('click', (e) => {
             e.preventDefault();
             e.stopPropagation();      // to prevent the parent div to execute (on click) event
-            const name = $(removeFolderButton).closest('.folder-div').find('.folder-hidden').val();
-            _self.removeFolderFromBackend(name, $(removeFolderButton).closest('.folder-div'))
+            const btn = e.currentTarget;
+            const name = ($(btn).closest('.folder-div').find('.folder-hidden').val() || '').trim();
+            _self.removeFolderFromBackend(name, $(btn).closest('.folder-div'))
         })
     }
 
@@ -376,6 +384,7 @@ class MediaLibrary {
      * @param folderName
      */
     removeFromFolder(folderName) {
+        folderName = (folderName || '').trim();
         const images = [];
         const _self = this;
         const selected = $(`#library-row-${this.libraryId} .selected`);   // gets all the selected images
@@ -405,6 +414,7 @@ class MediaLibrary {
      * @param folderName
      */
     addToFolder(folderName) {
+        folderName = (folderName || '').trim();
         const images = [];
         const selected = $(`#library-row-${this.libraryId} .selected`);   // gets all the selected images
         selected.each((index, element) => {
@@ -455,7 +465,7 @@ class MediaLibrary {
                                 $(`#infinite-scroll-button-${_self.libraryId}`).trigger('click');
                             })
                         }
-                        _self.folders = _self.folders.filter(f => f !== name)
+                        _self.folders = _self.folders.filter(f => (f.folder || f) !== (name || '').trim())
                         folder.remove();    // removes the folder div
                     })
             }
@@ -490,7 +500,17 @@ class MediaLibrary {
      * @param folders is the array of folder names
      */
     mlRefreshFolders(folders) {
-        folders = folders.sort();
+        const seen = new Set();
+        folders = (folders || []).map((data) => {
+            if (typeof data === 'string') {
+                return {folder: data.trim(), uid: '_self'};
+            }
+            return {folder: (data?.folder || '').trim(), uid: data?.uid ?? '_self'};
+        }).filter((data) => {
+            if (!data.folder || seen.has(data.folder)) return false;
+            seen.add(data.folder);
+            return true;
+        }).sort((a, b) => a.folder.localeCompare(b.folder));
         const r = $(`#folders-list-div-${this.libraryId}`);
         r.html('');   // empties the folder column
         // first add the gallery folder to be always on top
@@ -509,7 +529,7 @@ class MediaLibrary {
         folders.forEach(data => {
             const folder = data.folder;
             const uid = data.uid;
-            r.append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  "><input type="hidden" class="folder-hidden" data-user="${uid}" value=" ${folder}"><div class=""><div class="col-md-6 text-center  mt-2 float-start"><span class="ms-2">${folder.replace('gallery-', '')}</span> </div>
+            r.append(`<div class="folder-div bg-gray-100 rounded mt-2 row "><div class="  p-1  "><input type="hidden" class="folder-hidden" data-user="${uid}" value="${folder}"><div class=""><div class="col-md-6 text-center  mt-2 float-start"><span class="ms-2">${folder.replace('gallery-', '')}</span> </div>
  <div class="mt-2 float-end"><div class=""> <button class="add-to-folder btn btn-sm btn-icon btn-light btn-active-light-success fa-pull-left d-inline-block"><i class="fas fa-plus"></i></button>
   <button id="delete"
                                                         class="remove-folder me-1 btn btn-sm btn-icon btn-light btn-active-light-danger fa-pull-left">

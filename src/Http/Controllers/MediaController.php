@@ -37,6 +37,9 @@ class MediaController extends Controller
         }
 
         $currentUser = Auth::user();
+        if ($request->filled('folder')) {
+            $request->merge(['folder' => trim((string) $request->folder)]);
+        }
         if (!$request->accessAllMedia) {
             $images = $currentUser->getMedia($request->folder);
         } else {
@@ -104,8 +107,12 @@ class MediaController extends Controller
                 ->upload();
             $extension = $media->extension;
             $user->attachMedia($media, 'gallery');
-            if ($request->has('folder'))
-                $user->attachMedia($media, $request->folder);
+            if ($request->filled('folder')) {
+                $folder = trim((string) $request->folder);
+                if ($folder !== '' && $folder !== 'gallery') {
+                    $user->attachMedia($media, $folder);
+                }
+            }
             $name = $media->filename;
             $notChange = ['svg', 'gif'];
             $path = $media->getDiskPath();
@@ -200,7 +207,7 @@ class MediaController extends Controller
 
     public function removeFolder(Request $request)
     {
-        $folderName = $request->folder_name;
+        $folderName = trim((string) $request->folder_name);
         $currentUser = Auth::user();
         $currentUser->detachMediaTags($folderName);
     }
@@ -209,33 +216,53 @@ class MediaController extends Controller
     {
         $currentUser = Auth::user();
         $image_ids = $request->image_ids;
+        $folderName = trim((string) $request->folder_name);
+        if ($folderName === '' || $folderName === 'gallery') {
+            return;
+        }
         foreach ($image_ids as $image_id) {
             $image = $currentUser->getMedia('gallery')->where('id', $image_id)->first();
-            if (isset($image) && !in_array($request->folder_name, $currentUser->getTagsForMedia($image)))
-                $currentUser->attachMedia($image, $request->folder_name);
+            if (isset($image) && !in_array($folderName, $currentUser->getTagsForMedia($image))) {
+                $currentUser->attachMedia($image, $folderName);
+            }
         }
     }
 
     public function getAllFolders(Request $request)
     {
+        $this->normalizeSpacedGalleryTags();
 
         $currentUser = auth()->user();
         $folders = [];
         DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))");
 
         if ($request->accessAllMedia) {
+            // One UI folder per tag — grouping by mediable_id duplicated the same name per user.
             $folders = DB::table('mediables as m')
-                ->select('tag as folder', 'mediable_id as uid')
+                ->select('tag as folder', DB::raw('MIN(mediable_id) as uid'))
                 ->where('tag', 'like', 'gallery-%')
-                ->groupBy('tag', 'mediable_id')->get()->toArray();
+                ->groupBy('tag')
+                ->get()
+                ->map(fn ($row) => [
+                    'folder' => trim($row->folder),
+                    'uid' => $row->uid,
+                ])
+                ->filter(fn ($row) => $row['folder'] !== '' && $row['folder'] !== 'gallery')
+                ->unique('folder')
+                ->values()
+                ->toArray();
         } else {
             $tags = $currentUser->getAllMediaByTag();
             foreach ($tags as $key => $value) {
+                $key = trim($key);
                 if (str_contains($key, 'gallery-')) {
-                    $folders[] = ['folder' => $key,
-                        'uid' => $currentUser->id];
+                    $folders[] = [
+                        'folder' => $key,
+                        'uid' => $currentUser->id,
+                    ];
                 }
             }
+            $folders = collect($folders)->unique('folder')->values()->toArray();
         }
         return $folders;
     }
@@ -244,17 +271,59 @@ class MediaController extends Controller
     {
         $currentUser = Auth::user();
 
-        return $currentUser->getMedia($folder);
+        return $currentUser->getMedia(trim((string) $folder));
     }
 
     public function removeMediaFromFolder(Request $request)
     {
         $currentUser = Auth::user();
         $image_ids = $request->image_ids;
+        $folderName = trim((string) $request->folder_name);
         foreach ($image_ids as $image_id) {
             $image = $currentUser->getMedia('gallery')->where('id', $image_id)->first();
-            if (isset($image) && in_array($request->folder_name, $currentUser->getTagsForMedia($image)))
-                $currentUser->detachMedia($image, $request->folder_name);
+            if (isset($image) && in_array($folderName, $currentUser->getTagsForMedia($image))) {
+                $currentUser->detachMedia($image, $folderName);
+            }
+        }
+    }
+
+    /**
+     * Merge accidental " gallery-*" tags (leading space from older JS) into "gallery-*".
+     */
+    protected function normalizeSpacedGalleryTags(): void
+    {
+        $spaced = DB::table('mediables')
+            ->where('tag', 'like', ' gallery-%')
+            ->get(['media_id', 'mediable_type', 'mediable_id', 'tag']);
+
+        if ($spaced->isEmpty()) {
+            return;
+        }
+
+        foreach ($spaced as $row) {
+            $normalized = trim($row->tag);
+            $exists = DB::table('mediables')
+                ->where('media_id', $row->media_id)
+                ->where('mediable_type', $row->mediable_type)
+                ->where('mediable_id', $row->mediable_id)
+                ->where('tag', $normalized)
+                ->exists();
+
+            if ($exists) {
+                DB::table('mediables')
+                    ->where('media_id', $row->media_id)
+                    ->where('mediable_type', $row->mediable_type)
+                    ->where('mediable_id', $row->mediable_id)
+                    ->where('tag', $row->tag)
+                    ->delete();
+            } else {
+                DB::table('mediables')
+                    ->where('media_id', $row->media_id)
+                    ->where('mediable_type', $row->mediable_type)
+                    ->where('mediable_id', $row->mediable_id)
+                    ->where('tag', $row->tag)
+                    ->update(['tag' => $normalized]);
+            }
         }
     }
 
